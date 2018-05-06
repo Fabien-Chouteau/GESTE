@@ -1,5 +1,17 @@
-# Object file
-*.o
-
-# Ada Library Information
+*.db
 *.ali
+*.o
+*.a
+*.xml
+*.cgpr
+*.bexch
+*.lexch
+*.ci
+*.cswi
+*.stderr
+*.stdout
+*~
+*.pyc
+obj/
+lib/
+bin/
