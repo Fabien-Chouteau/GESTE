@@ -12,6 +12,11 @@ env:
 os:
   - linux
 
+addons:
+    apt:
+        packages:
+            - lcov
+
 # Cache directory that allows us to not download GNAT GPL every time, speeding
 # up the process.
 cache:
@@ -34,4 +39,7 @@ script:
   - $PWD/gnat-gpl-2017-x86_64-linux-bin/bin/gprbuild --version
 
   # Start the testsuite
-  - python $PWD/tests/run.py
+  - python $PWD/tests/run.py --coverage
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -f tests/coverage_results/coverage.info

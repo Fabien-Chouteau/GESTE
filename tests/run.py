@@ -2,10 +2,13 @@
 
 import subprocess
 import os
+import argparse
 
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 tests_dir = os.path.join(root_dir, 'tests')
 bin_dir = os.path.join(tests_dir, "bin")
+obj_dir = os.path.join(tests_dir, "obj")
+cov_dir = os.path.join(tests_dir, "coverage_results")
 expect_dir = os.path.join(tests_dir, "expected_outputs")
 
 
@@ -27,15 +30,19 @@ def run_program(*argv):
     except UnicodeError:
         return 'stderr is not ASCII'
 
+    if p.returncode:
+        print "Cmd: " + " ".join(argv)
+        print "=== stdout ===\n" + stdout
+        print "=== stderr ===\n" + stderr
     return (p.returncode, stdout, stderr)
 
 at_lease_one_error = False
 
 
-def print_result(name, error, stdout, stderr):
+def print_result(name, error):
     if error:
         at_lease_one_error = True
-        print('\x1b[31mFAIL\x1b[0m {}: {}\nstdout:\n{}\n stderr:\n{}'.format(error, name, stdout, stderr))
+        print('\x1b[31mFAIL\x1b[0m {}: {}'.format(error, name))
     else:
         print('\x1b[32mOK\x1b[0m     : {}'.format(name))
 
@@ -57,17 +64,61 @@ def find_testcases():
             yield filename
 
 
-def main():
+def gcda_files():
+    l = []
+    for root, dirs, files in os.walk(root_dir):
+        for file in files:
+            if file.endswith(".gcda"):
+                l.append(os.path.join(root, file))
+    return l
+
+
+def coverage_analysis():
+
+    files = gcda_files()
+
+    if not os.path.exists(cov_dir):
+        os.makedirs(cov_dir)
+
+    print "Coverage analysis (%d files)..." % len(files)
+    os.chdir(cov_dir)
+    run_program(*(['gcov'] + files))
+
+    lcov_file = os.path.join(cov_dir, 'coverage.info')
+
+    run_program('lcov', '--directory', obj_dir, '--initial',
+                '--capture', '--output-file', lcov_file)
+
+    run_program('lcov', '--directory', obj_dir,
+                '--capture', '--output-file', lcov_file)
+
+    for filt in ['*/adainclude/*', '*/tests/*']:
+        run_program('lcov', '--remove', lcov_file, filt,
+                    '--output-file', lcov_file)
+
+    ret, stdout, stderr = run_program('lcov', '-l', lcov_file)
+    print stdout
+
+    run_program('genhtml', '--ignore-errors', 'source', lcov_file,
+                '--output-directory=' + os.path.join(cov_dir, 'html'))
+
+
+def main(args):
 
     # Clean tests
     ret, stdout, stderr = run_program("gprclean", "-r", "-P",
                                       os.path.join(tests_dir, "tests.gpr"))
-    print_result("Test cleanup", ret, stdout, stderr)
+    print_result("Test cleanup", ret)
 
+    build_args = ["gprbuild", '-f', "-j0", "-P",
+                  os.path.join(tests_dir, "tests.gpr")]
+
+    if args.coverage:
+        build_args += ['-g', '-largs', '-lgcov', '-fprofile-arcs',
+                       '-cargs', '-fprofile-arcs', '-ftest-coverage']
     # Build tests
-    ret, stdout, stderr = run_program("gprbuild", "-j0", "-P",
-                                      os.path.join(tests_dir, "tests.gpr"))
-    print_result("Test build", ret, stdout, stderr)
+    ret, stdout, stderr = run_program(*build_args)
+    print_result("Test build", ret)
 
     at_least_one_error = False
 
@@ -85,11 +136,26 @@ def main():
             stdout = diff_out
             stderr = diff_err
 
-        print_result("Test " + test, ret, stdout, stderr)
+        print_result("Test " + test, ret)
+
+    if args.coverage:
+        coverage_analysis()
 
     if at_least_one_error:
         sys.exit(1)
 
 
+parser = argparse.ArgumentParser('Run the testsuite')
+
+parser.add_argument(
+    '--coverage', action='store_true', default=False,
+    help='Compute code coverage'
+)
+
+parser.add_argument(
+    '--verbose', action='store_true',
+    help='Print exit code and output for all tests, regardless of results'
+)
+
 if __name__ == '__main__':
-    main()
+    main(parser.parse_args())
