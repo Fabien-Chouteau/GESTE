@@ -46,12 +46,12 @@ package body GESTE is
    is (Coordinate'Min (A, B))
    with Inline_Always;
 
-   ---------------
-   -- Posistion --
-   ---------------
+   --------------
+   -- Position --
+   --------------
 
-   function Posistion (This : Layer_Type)
-                       return Point
+   function Position (This : Layer_Type)
+                     return Point
    is (This.Pt);
 
    ----------

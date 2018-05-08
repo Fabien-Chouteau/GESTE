@@ -92,7 +92,7 @@ package GESTE is
 
    type Layer_Type is abstract tagged limited private;
 
-   function Posistion (This : Layer_Type) return Point;
+   function Position (This : Layer_Type) return Point;
    function Width (This : Layer_Type) return Natural;
    function Height (This : Layer_Type) return Natural;
 

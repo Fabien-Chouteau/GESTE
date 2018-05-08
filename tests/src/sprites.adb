@@ -14,6 +14,8 @@ procedure Sprites is
       Transparent  => '3',
       Tile_Size    => 5);
 
+   use type Console_GESTE.Point;
+
    package Console_Screen is new Console_Char_Screen
      (Width       => 16,
       Height      => 16,
@@ -54,6 +56,11 @@ begin
    Console_Screen.Verbose;
 
    Sprite_A.Move ((1, 1));
+
+   if Sprite_A.Position /= (1, 1) then
+      raise Program_Error;
+   end if;
+
    Console_GESTE.Add (Sprite_A'Access);
 
    Sprite_B.Move ((10, 4));
