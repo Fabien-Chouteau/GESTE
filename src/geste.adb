@@ -227,8 +227,8 @@ package body GESTE is
             H := L.Height;
             X0 := Min (L.Last_Pt.X, L.Pt.X);
             Y0 := Min (L.Last_Pt.Y, L.Pt.Y);
-            X1 := Max (L.Last_Pt.X + W, L.Pt.X + W);
-            Y1 := Max (L.Last_Pt.Y + H, L.Pt.Y + H);
+            X1 := Max (L.Last_Pt.X + W, L.Pt.X + W - 1);
+            Y1 := Max (L.Last_Pt.Y + H, L.Pt.Y + H - 1);
 
             --  Apply screen limits
             X0 := Max (Min_X, Min (Max_X, X0));
