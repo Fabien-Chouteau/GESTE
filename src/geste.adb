@@ -32,6 +32,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with Interfaces; use Interfaces;
+
 package body GESTE is
    use Tile_Bank;
    use Layer;
@@ -121,6 +123,21 @@ package body GESTE is
       Index : Output_Buffer_Index := Buffer'First;
       L     : Layer.Ref;
    begin
+      --  For each pixel that we want to render, we look for the color of that
+      --  pixel inside the first layer. If that color is not the Transparent
+      --  color, we push it to the screen, otherwise we look in the next layer.
+      --
+      --  Here is a one dimension example using characters for the output
+      --  'color'. The | (pipe) symbol shows how the layers are traversed.
+      --
+      --              ||||||||||||||||||||||||||||||||||||||||||||||||||
+      --  Layer 1   : AAA|A|AAA|AA|AAA|AA||||AA|A|||||A||||||A|A|||||A|A
+      --  Layer 2   :   BBBB   | BBB BBBBBB||  BBBBB|BB|BBB||BBB||||| BB
+      --  Layer 3   : CCCCCCC  | CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC||||CCC
+      --  Background: ##################################################
+      --
+      --  Output    : AAABABAAA#AABAAABAABBCCAABABBBCBACBBBCCABAC#####ABA
+
       Set_Drawing_Area (Window);
 
       for Y in Window.TL.Y .. Window.BR.Y loop
@@ -150,6 +167,8 @@ package body GESTE is
             end if;
          end loop;
       end loop;
+
+      --  Push the remaining pixels
       if Index /= Buffer'First then
          Push_Pixels (Buffer (Buffer'First .. Index - 1));
       end if;
@@ -325,6 +344,211 @@ package body GESTE is
 
       C := This.Bank.Tiles (This.Frame) (Pt.X, Pt.Y);
       return This.Bank.Palette (C);
+   end Pix;
+
+   ------------
+   -- Cursor --
+   ------------
+
+   procedure Cursor (This : in out Text_Type;
+                     X, Y : Positive)
+   is
+   begin
+      if X <= This.Matrix'Last (1) and then Y <= This.Matrix'Last (2) then
+         This.CX := X;
+         This.CY := Y;
+      end if;
+   end Cursor;
+
+   ---------
+   -- Put --
+   ---------
+
+   procedure Put (This : in out Text_Type;
+                  C    : Character)
+   is
+   begin
+      This.Matrix (This.CX, This.CY).C := C;
+
+      This.Dirty := True;
+
+      if This.CX < This.Matrix'Last (1) and then C /= ASCII.LF then
+         This.CX := This.CX + 1;
+      else
+         This.CX := This.Matrix'First (1);
+         if This.CY < This.Matrix'Last (2) then
+            This.CY := This.CY + 1;
+         else
+            This.CY := This.Matrix'First (2);
+         end if;
+      end if;
+   end Put;
+
+   ---------
+   -- Put --
+   ---------
+
+   procedure Put (This : in out Text_Type;
+                  Str  : String)
+   is
+   begin
+      for C of Str loop
+         This.Put (C);
+      end loop;
+   end Put;
+
+   ----------
+   -- Char --
+   ----------
+
+   function Char (This : in out Text_Type;
+                  X, Y : Positive)
+                  return Character
+   is
+   begin
+      if X <= This.Matrix'Last (1)
+        and then
+         Y <= This.Matrix'Last (2)
+      then
+         return This.Matrix (X, Y).C;
+      else
+         return ASCII.NUL;
+      end if;
+   end Char;
+
+   ----------------
+   -- Set_Colors --
+   ----------------
+
+   procedure Set_Colors (This       : in out Text_Type;
+                         X, Y       : Positive;
+                         Foreground : Output_Color;
+                         Background : Output_Color)
+   is
+   begin
+      if X <= This.Matrix'Last (1)
+        and then
+         Y <= This.Matrix'Last (2)
+      then
+         This.Matrix (X, Y).FG := Foreground;
+         This.Matrix (X, Y).BG := Background;
+         This.Dirty := True;
+      end if;
+   end Set_Colors;
+
+   --------------------
+   -- Set_Colors_All --
+   --------------------
+
+   procedure Set_Colors_All (This       : in out Text_Type;
+                             Foreground : Output_Color;
+                             Background : Output_Color)
+   is
+   begin
+      for C of This.Matrix loop
+         C.FG := Foreground;
+         C.BG := Background;
+      end loop;
+      This.Dirty := True;
+   end Set_Colors_All;
+
+   ------------
+   -- Invert --
+   ------------
+
+   procedure Invert (This     : in out Text_Type;
+                     X, Y     : Positive;
+                     Inverted : Boolean := True)
+   is
+   begin
+      if X <= This.Matrix'Last (1)
+        and then
+         Y <= This.Matrix'Last (2)
+      then
+         This.Matrix (X, Y).Inverted := Inverted;
+         This.Dirty := True;
+      end if;
+   end Invert;
+
+   ----------------
+   -- Invert_All --
+   ----------------
+
+   procedure Invert_All (This     : in out Text_Type;
+                         Inverted : Boolean := True)
+   is
+   begin
+      for C of This.Matrix loop
+         C.Inverted := Inverted;
+         This.Dirty := True;
+      end loop;
+   end Invert_All;
+
+   ---------
+   -- Pix --
+   ---------
+
+   overriding
+   function Pix (This : Text_Type;
+                 X, Y : Integer)
+                 return Output_Color
+   is
+      Pt : Point;
+      CX, CY : Positive;
+      PX, PY : Integer;
+      C : Char_Property;
+
+      Index : Integer;
+      Bitmap_Offset : Integer;
+
+      Bit_Index : Natural;
+
+      GW : constant Positive := This.Da_Font.Glyph_Width;
+      GH : constant Positive := This.Da_Font.Glyph_Height;
+
+      function FG return Output_Color
+      is (if C.Inverted then C.BG else C.FG);
+
+      function BG return Output_Color
+      is (if C.Inverted then C.FG else C.BG);
+   begin
+      Pt.X := X - This.Pt.X;
+      Pt.Y := Y - This.Pt.Y;
+
+      if Pt.X not in 0 .. This.Number_Of_Columns * GW - 1
+        or else
+          Pt.Y not in 0 .. This.Number_Of_Lines * GH - 1
+      then
+         return Transparent;
+      end if;
+
+      CX := This.Matrix'First (1) + (Pt.X / GW);
+      CY := This.Matrix'First (2) + (Pt.Y / GH);
+
+      C := This.Matrix (CX, CY);
+
+      if C.C in '!' .. '~' then
+         Index := Character'Pos (C.C) - Character'Pos ('!');
+
+         PX := Pt.X mod GW;
+         PY := Pt.Y mod GH;
+
+         Bit_Index := PX + PY * GW;
+
+         Bitmap_Offset := This.Da_Font.Bytes_Per_Glyph * Index + Bit_Index / 8;
+
+         Bit_Index := Bit_Index mod 8;
+
+         if (Shift_Left (This.Da_Font.Data (Bitmap_Offset),
+                         Bit_Index) and 16#80#) /= 0
+         then
+            return FG;
+         else
+            return BG;
+         end if;
+      else
+         return BG;
+      end if;
    end Pix;
 
 end GESTE;

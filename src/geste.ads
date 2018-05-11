@@ -32,6 +32,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with GESTE_Fonts;
+
 generic
    type Output_Color is (<>);
 
@@ -137,6 +139,51 @@ package GESTE is
       type Const_Ref is access constant Class;
    end Sprite;
 
+   -- Text --
+
+   type Text_Type (Da_Font           : not null GESTE_Fonts.Bitmap_Font_Ref;
+                   Number_Of_Columns : Positive;
+                   Number_Of_Lines   : Positive;
+                   Foreground        : Output_Color;
+                   Background        : Output_Color)
+   is new Layer_Type with private;
+
+   procedure Cursor (This : in out Text_Type;
+                     X, Y : Positive);
+
+   procedure Put (This : in out Text_Type;
+                  C    : Character);
+
+   procedure Put (This : in out Text_Type;
+                  Str  : String);
+
+   function Char (This : in out Text_Type;
+                  X, Y : Positive)
+                  return Character;
+
+   procedure Set_Colors (This       : in out Text_Type;
+                         X, Y       : Positive;
+                         Foreground : Output_Color;
+                         Background : Output_Color);
+
+   procedure Set_Colors_All (This       : in out Text_Type;
+                             Foreground : Output_Color;
+                             Background : Output_Color);
+
+   procedure Invert (This     : in out Text_Type;
+                     X, Y     : Positive;
+                     Inverted : Boolean := True);
+
+   procedure Invert_All (This     : in out Text_Type;
+                         Inverted : Boolean := True);
+
+   package Text is
+      subtype Instance is Text_Type;
+      subtype Class is Instance'Class;
+      type Ref is access all Class;
+      type Const_Ref is access constant Class;
+   end Text;
+
    -- Engine --
 
    procedure Add (L : not null Layer.Ref);
@@ -229,6 +276,46 @@ private
 
    overriding
    function Pix (This : Sprite_Type; X, Y : Integer) return Output_Color;
+
+   -- Text --
+
+   type Text_Access is access all Grid_Type;
+
+   type Char_Property is record
+      C        : Character;
+      Inverted : Boolean;
+      FG       : Output_Color;
+      BG       : Output_Color;
+   end record;
+
+   type Char_Matrix is array (Positive range <>, Positive range <>)
+     of Char_Property;
+
+   type Text_Type (Da_Font           : not null GESTE_Fonts.Bitmap_Font_Ref;
+                   Number_Of_Columns : Positive;
+                   Number_Of_Lines   : Positive;
+                   Foreground        : Output_Color;
+                   Background        : Output_Color)
+   is new Layer_Type with record
+      Matrix : Char_Matrix (1 .. Number_Of_Columns, 1 .. Number_Of_Lines) :=
+        (others => (others => (' ', False, Foreground, Background)));
+
+      CX : Positive := 1;
+      CY : Positive := 1;
+   end record;
+
+   overriding
+   function Width (This : Text_Type) return Natural
+   is (This.Number_Of_Columns * This.Da_Font.Glyph_Width);
+   --  TODO: This is constant and could be computed once and for all
+
+   overriding
+   function Height (This : Text_Type) return Natural
+   is (This.Number_Of_Lines * This.Da_Font.Glyph_Height);
+   --  TODO: This is constant and could be computed once and for all
+
+   overriding
+   function Pix (This : Text_Type; X, Y : Integer) return Output_Color;
 
    Layer_List : Layer.Ref := null;
 end GESTE;

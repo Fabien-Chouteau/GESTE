@@ -2,11 +2,12 @@ with "../geste";
 
 project Tests is
 
-  for Languages use ("Ada");
-  for Source_Dirs use ("src", "utils");
-  for Object_Dir use "obj";
-  for Exec_Dir use "bin";
-  for Create_Missing_Dirs use "True";
-  for Main use ("sprites.adb", "grids.adb", "multi_palette.adb");
+   for Languages use ("Ada");
+   for Source_Dirs use ("src", "utils");
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+   for Create_Missing_Dirs use "True";
+   for Main use ("sprites.adb", "grids.adb", "multi_palette.adb",
+                 "simple_text.adb", "text_dirty.adb");
 
 end Tests;
