@@ -2,7 +2,7 @@ New drawing area:
 X Start: 0
 X End: 19
 Y Start: 0
-Y Send: 19
+Y end: 19
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 _ _ _ _ _ # _ _ _ _ _ _ _ _ _ _ _ _ _ _
 _ _ _ _ # 0 # _ _ _ _ _ _ _ _ _ _ _ _ _
@@ -27,7 +27,7 @@ New drawing area:
 X Start: 1
 X End: 13
 Y Start: 1
-Y Send: 13
+Y end: 13
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _

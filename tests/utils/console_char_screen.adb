@@ -53,7 +53,7 @@ package body Console_Char_Screen is
          Put_Line ("X Start:" & XS'Img);
          Put_Line ("X End:" & XE'Img);
          Put_Line ("Y Start:" & YS'Img);
-         Put_Line ("Y Send:" & YE'Img);
+         Put_Line ("Y end:" & YE'Img);
       end if;
    end Set_Drawing_Area;
 
