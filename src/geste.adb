@@ -71,6 +71,17 @@ package body GESTE is
       end if;
    end Move;
 
+   -----------------------
+   -- Enable_Collisions --
+   -----------------------
+
+   procedure Enable_Collisions (This   : in out Layer_Type;
+                                Enable : Boolean := True)
+   is
+   begin
+      This.Collissions_Enabled := Enable;
+   end Enable_Collisions;
+
    -----------
    -- Width --
    -----------
@@ -85,18 +96,18 @@ package body GESTE is
    function Height (This : Layer_Type) return Natural
    is (0);
 
-   ---------------
-   -- Set_Frame --
-   ---------------
+   --------------
+   -- Set_Tile --
+   --------------
 
-   procedure Set_Frame (This        : in out Sprite_Type;
-                        Frame       : Tile_Index;
-                        Orientation : Integer)
+   procedure Set_Tile (This        : in out Sprite_Type;
+                       Tile        : Tile_Index;
+                       Orientation : Integer)
    is
    begin
-      This.Frame := Frame;
+      This.Tile := Tile;
       This.Orientation := Orientation;
-   end Set_Frame;
+   end Set_Tile;
 
    ---------
    -- Add --
@@ -270,6 +281,23 @@ package body GESTE is
       end loop;
    end Render_Dirty;
 
+   --------------
+   -- Collides --
+   --------------
+
+   function Collides (Pt : Point) return Boolean is
+      L : Layer.Ref := Layer_List;
+   begin
+
+      while L /= null loop
+         if L.Collissions_Enabled and then L.Collides (Pt.X, Pt.Y) then
+            return True;
+         end if;
+         L := L.Next;
+      end loop;
+      return False;
+   end Collides;
+
    -----------
    -- Width --
    -----------
@@ -320,6 +348,39 @@ package body GESTE is
       end if;
    end Pix;
 
+   --------------
+   -- Collides --
+   --------------
+
+   overriding
+   function Collides (This : Grid_Type;
+                      X, Y : Integer)
+                      return Boolean
+   is
+      Pt      : Point;
+      Tile_ID : Tile_Index;
+   begin
+      Pt.X := X - This.Pt.X;
+      Pt.Y := Y - This.Pt.Y;
+
+      if Pt.X not in 0 .. (This.Data'Length (1) * Tile_Size) - 1
+        or else
+          Pt.Y not in 0 .. (This.Data'Length (2) * Tile_Size) - 1
+      then
+         return False;
+      end if;
+
+      Tile_ID := This.Data (This.Data'First (1) + (Pt.X / Tile_Size),
+                            This.Data'First (2) + (Pt.Y / Tile_Size));
+
+      if Tile_ID = No_Tile or else This.Bank.Collisions = null then
+         return False;
+      else
+         return This.Bank.Collisions (Tile_ID) (Pt.X mod Tile_Size,
+                                                Pt.Y mod Tile_Size);
+      end if;
+   end Collides;
+
    ---------
    -- Pix --
    ---------
@@ -342,9 +403,52 @@ package body GESTE is
          return Transparent;
       end if;
 
-      C := This.Bank.Tiles (This.Frame) (Pt.X, Pt.Y);
+      C := This.Bank.Tiles (This.Tile) (Pt.X, Pt.Y);
       return This.Bank.Palette (C);
+
    end Pix;
+
+   --------------
+   -- Collides --
+   --------------
+
+   overriding
+   function Collides (This : Sprite_Type;
+                      X, Y : Integer)
+                      return Boolean
+   is
+      Pt : Point;
+   begin
+      Pt.X := X - This.Pt.X;
+      Pt.Y := Y - This.Pt.Y;
+
+      if Pt.X not in 0 .. Tile_Size - 1
+        or else
+          Pt.Y not in 0 .. Tile_Size - 1
+      then
+         return False;
+      end if;
+
+      if This.Bank.Collisions /= null then
+         return This.Bank.Collisions (This.Tile) (Pt.X, Pt.Y);
+      else
+         return False;
+      end if;
+   end Collides;
+
+   -----------
+   -- Clear --
+   -----------
+
+   procedure Clear (This : in out Text_Type) is
+   begin
+      for C of This.Matrix loop
+         C.C := ' ';
+      end loop;
+      This.CX := 1;
+      This.CY := 1;
+      This.Dirty := True;
+   end Clear;
 
    ------------
    -- Cursor --
@@ -484,6 +588,58 @@ package body GESTE is
       end loop;
    end Invert_All;
 
+   function Text_Bitmap_Set (This     : Text_Type;
+                             X, Y     : Integer;
+                             C        : out Char_Property)
+                             return Boolean;
+
+   ---------------------
+   -- Text_Bitmap_Set --
+   ---------------------
+
+   function Text_Bitmap_Set (This     : Text_Type;
+                             X, Y     : Integer;
+                             C        : out Char_Property)
+                             return Boolean
+   is
+      GW : constant Positive := This.Da_Font.Glyph_Width;
+      GH : constant Positive := This.Da_Font.Glyph_Height;
+
+      CX, CY        : Positive;
+      PX, PY        : Integer;
+      Index         : Integer;
+      Bit_Index     : Natural;
+      Bitmap_Offset : Integer;
+   begin
+      CX := This.Matrix'First (1) + (X / GW);
+      CY := This.Matrix'First (2) + (Y / GH);
+
+      C := This.Matrix (CX, CY);
+
+      if C.C in '!' .. '~' then
+         Index := Character'Pos (C.C) - Character'Pos ('!');
+
+         PX := X mod GW;
+         PY := Y mod GH;
+
+         Bit_Index := PX + PY * GW;
+
+         Bitmap_Offset := This.Da_Font.Bytes_Per_Glyph * Index + Bit_Index / 8;
+
+         Bit_Index := Bit_Index mod 8;
+
+         if (Shift_Left (This.Da_Font.Data (Bitmap_Offset),
+                         Bit_Index) and 16#80#) /= 0
+         then
+            return not C.Inverted;
+         else
+            return C.Inverted;
+         end if;
+      else
+         return C.Inverted;
+      end if;
+   end Text_Bitmap_Set;
+
    ---------
    -- Pix --
    ---------
@@ -494,23 +650,10 @@ package body GESTE is
                  return Output_Color
    is
       Pt : Point;
-      CX, CY : Positive;
-      PX, PY : Integer;
-      C : Char_Property;
-
-      Index : Integer;
-      Bitmap_Offset : Integer;
-
-      Bit_Index : Natural;
-
       GW : constant Positive := This.Da_Font.Glyph_Width;
       GH : constant Positive := This.Da_Font.Glyph_Height;
+      C : Char_Property;
 
-      function FG return Output_Color
-      is (if C.Inverted then C.BG else C.FG);
-
-      function BG return Output_Color
-      is (if C.Inverted then C.FG else C.BG);
    begin
       Pt.X := X - This.Pt.X;
       Pt.Y := Y - This.Pt.Y;
@@ -522,33 +665,38 @@ package body GESTE is
          return Transparent;
       end if;
 
-      CX := This.Matrix'First (1) + (Pt.X / GW);
-      CY := This.Matrix'First (2) + (Pt.Y / GH);
-
-      C := This.Matrix (CX, CY);
-
-      if C.C in '!' .. '~' then
-         Index := Character'Pos (C.C) - Character'Pos ('!');
-
-         PX := Pt.X mod GW;
-         PY := Pt.Y mod GH;
-
-         Bit_Index := PX + PY * GW;
-
-         Bitmap_Offset := This.Da_Font.Bytes_Per_Glyph * Index + Bit_Index / 8;
-
-         Bit_Index := Bit_Index mod 8;
-
-         if (Shift_Left (This.Da_Font.Data (Bitmap_Offset),
-                         Bit_Index) and 16#80#) /= 0
-         then
-            return FG;
-         else
-            return BG;
-         end if;
+      if Text_Bitmap_Set (This, Pt.X, Pt.Y, C) then
+         return C.FG;
       else
-         return BG;
+         return C.BG;
       end if;
    end Pix;
+
+   --------------
+   -- Collides --
+   --------------
+
+   overriding
+   function Collides (This : Text_Type;
+                      X, Y : Integer)
+                      return Boolean
+   is
+      Pt : Point;
+      GW : constant Positive := This.Da_Font.Glyph_Width;
+      GH : constant Positive := This.Da_Font.Glyph_Height;
+      C : Char_Property;
+   begin
+      Pt.X := X - This.Pt.X;
+      Pt.Y := Y - This.Pt.Y;
+
+      if Pt.X not in 0 .. This.Number_Of_Columns * GW - 1
+        or else
+          Pt.Y not in 0 .. This.Number_Of_Lines * GH - 1
+      then
+         return False;
+      end if;
+
+      return Text_Bitmap_Set (This, Pt.X, Pt.Y, C);
+   end Collides;
 
 end GESTE;

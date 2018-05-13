@@ -93,4 +93,28 @@ package body Console_Char_Screen is
       Ada.Text_IO.Set_Output (Output);
    end Set_Output;
 
+   --------------------
+   -- Test_Collision --
+   --------------------
+
+   procedure Test_Collision
+     (X, Y     : Integer;
+      Expected : Boolean)
+   is
+   begin
+      if Engine.Collides ((X, Y)) /= Expected then
+         if Expected then
+            Put_Line ("Collision expected at X:" & X'Img & " Y:" & Y'Img);
+         else
+            Put_Line ("Unexpected collision at X:" & X'Img & " Y:" & Y'Img);
+         end if;
+      else
+         if Expected then
+            Put_Line ("Collision decteted at X:" & X'Img & " Y:" & Y'Img);
+         else
+            Put_Line ("No collision at X:" & X'Img & " Y:" & Y'Img);
+         end if;
+      end if;
+   end Test_Collision;
+
 end Console_Char_Screen;

@@ -43,6 +43,7 @@ procedure Sprites is
      );
 
    Bank : aliased Console_GESTE.Tile_Bank.Instance (Tiles'Access,
+                                                    Console_GESTE.No_Collisions,
                                                     Palette'Access);
 
    Sprite_A : aliased Console_GESTE.Sprite.Instance (Bank       => Bank'Access,

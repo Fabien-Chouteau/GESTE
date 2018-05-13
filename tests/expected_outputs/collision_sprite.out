@@ -1,0 +1,18 @@
+# # # # # # # # # #
+# 0 0 0 # #       #
+# 0   0 # #       #
+# 0 0 0 # #       #
+# # # # # # # # # #
+No collision at X: 0 Y: 0
+No collision at X: 1 Y: 1
+No collision at X: 2 Y: 2
+No collision at X: 6 Y: 6
+Collision decteted at X: 0 Y: 0
+No collision at X: 1 Y: 1
+No collision at X: 2 Y: 2
+No collision at X: 6 Y: 6
+Collision decteted at X: 0 Y: 0
+Collision decteted at X: 1 Y: 1
+No collision at X: 2 Y: 2
+No collision at X: 6 Y: 6
+No collision at X: 6 Y: 0

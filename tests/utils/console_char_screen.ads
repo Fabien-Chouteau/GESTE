@@ -28,4 +28,7 @@ package Console_Char_Screen is
    procedure Verbose;
    procedure Set_Output (Output : File_Type);
 
+   procedure Test_Collision (X, Y : Integer;
+                             Expected : Boolean);
+
 end Console_Char_Screen;

@@ -69,18 +69,33 @@ package GESTE is
 
    -- Tile --
 
-   type Tile is array (0 .. Tile_Size - 1, 0 .. Tile_Size - 1) of Color_Index;
+   type Tile is array (0 .. Tile_Size - 1,
+                       0 .. Tile_Size - 1)
+     of Color_Index;
 
    type Tile_Array is array (Tile_Index range <>) of Tile;
    type Tile_Array_Ref is access constant Tile_Array;
 
-   type Grid_Data is array (Natural range <>, Natural range <>) of Tile_Index;
+   type Tile_Collisions is array (0 .. Tile_Size - 1,
+                                  0 .. Tile_Size - 1)
+     of Boolean;
+
+   type Tile_Collisions_Array is array (Tile_Index range <>)
+     of Tile_Collisions;
+
+   type Tile_Collisions_Array_Ref is access constant Tile_Collisions_Array;
+   No_Collisions : constant Tile_Collisions_Array_Ref := null;
+
+   type Grid_Data is array (Natural range <>,
+                            Natural range <>)
+     of Tile_Index;
    type Grid_Data_Ref is access constant Grid_Data;
 
    -- Tile_Bank --
 
-   type Tile_Bank_Type (Tiles   : not null Tile_Array_Ref;
-                        Palette : Palette_Ref)
+   type Tile_Bank_Type (Tiles      : not null Tile_Array_Ref;
+                        Collisions :          Tile_Collisions_Array_Ref;
+                        Palette    :          Palette_Ref)
    is tagged limited private;
 
    package Tile_Bank is
@@ -100,6 +115,9 @@ package GESTE is
 
    procedure Move (This : in out Layer_Type;
                    Pt   : Point);
+
+   procedure Enable_Collisions (This   : in out Layer_Type;
+                                Enable : Boolean := True);
 
    package Layer is
       subtype Instance is Layer_Type;
@@ -128,9 +146,9 @@ package GESTE is
                      Init_Frame : Tile_Index)
    is new Layer_Type with private;
 
-   procedure Set_Frame (This        : in out Sprite_Type;
-                        Frame       : Tile_Index;
-                        Orientation : Integer);
+   procedure Set_Tile (This        : in out Sprite_Type;
+                       Tile        : Tile_Index;
+                       Orientation : Integer);
 
    package Sprite is
       subtype Instance is Sprite_Type;
@@ -147,6 +165,9 @@ package GESTE is
                    Foreground        : Output_Color;
                    Background        : Output_Color)
    is new Layer_Type with private;
+
+   procedure Clear (This : in out Text_Type);
+   --  Erase all text and set the cursor to (1, 1)
 
    procedure Cursor (This : in out Text_Type;
                      X, Y : Positive);
@@ -215,25 +236,34 @@ package GESTE is
                            Push_Pixels      : Push_Pixels_Proc;
                            Set_Drawing_Area : Set_Drawing_Area_Proc);
 
+   -- Collisions --
+
+   function Collides (Pt : Point) return Boolean;
+
 private
 
    -- Tile_Bank --
 
-   type Tile_Bank_Type (Tiles   : not null Tile_Array_Ref;
-                        Palette : Palette_Ref)
+   type Tile_Bank_Type (Tiles      : not null Tile_Array_Ref;
+                        Collisions :          Tile_Collisions_Array_Ref;
+                        Palette     :         Palette_Ref)
    is tagged limited null record;
 
    -- Layer --
 
    type Layer_Type is abstract tagged limited record
-      Pt      : Point := (0, 0);
-      Next    : Layer.Ref := null;
-      Dirty   : Boolean := True;
-      Last_Pt : Point := (0, 0);
+      Pt                  : Point := (0, 0);
+      Next                : Layer.Ref := null;
+      Dirty               : Boolean := True;
+      Last_Pt             : Point := (0, 0);
+      Collissions_Enabled : Boolean := False;
    end record;
 
    function Pix (This : Layer_Type; X, Y : Integer) return Output_Color
    is (Transparent);
+
+   function Collides (This : Layer_Type; X, Y : Integer) return Boolean
+   is (False);
 
    -- Grid --
 
@@ -255,6 +285,9 @@ private
    overriding
    function Pix (This : Grid_Type; X, Y : Integer) return Output_Color;
 
+   overriding
+   function Collides (This : Grid_Type; X, Y : Integer) return Boolean;
+
    -- Sprite --
 
    type Sprite_Access is access all Grid_Type;
@@ -262,7 +295,7 @@ private
    type Sprite_Type (Bank       : not null Tile_Bank.Const_Ref;
                      Init_Frame : Tile_Index)
    is new Layer_Type with record
-      Frame : Tile_Index := Init_Frame;
+      Tile        : Tile_Index := Init_Frame;
       Orientation : Integer := 0;
    end record;
 
@@ -276,6 +309,9 @@ private
 
    overriding
    function Pix (This : Sprite_Type; X, Y : Integer) return Output_Color;
+
+   overriding
+   function Collides (This : Sprite_Type; X, Y : Integer) return Boolean;
 
    -- Text --
 
@@ -316,6 +352,9 @@ private
 
    overriding
    function Pix (This : Text_Type; X, Y : Integer) return Output_Color;
+
+   overriding
+   function Collides (This : Text_Type; X, Y : Integer) return Boolean;
 
    Layer_List : Layer.Ref := null;
 end GESTE;

@@ -41,6 +41,7 @@ procedure Grids is
      );
 
    Bank : aliased Console_GESTE.Tile_Bank.Instance (Tiles'Access,
+                                                    Console_GESTE.No_Collisions,
                                                     Palette'Access);
 
    Grid_Data : aliased constant Console_GESTE.Grid_Data :=

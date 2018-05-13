@@ -74,4 +74,8 @@ begin
    Text_A.Set_Colors (4, 1, '_', ' ');
    Update;
 
+   --  Check that clearing text triggers a re-draw
+   Text_A.Clear;
+   Update;
+
 end Text_Dirty;

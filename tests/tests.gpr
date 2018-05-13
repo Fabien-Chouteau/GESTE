@@ -7,7 +7,13 @@ project Tests is
    for Object_Dir use "obj";
    for Exec_Dir use "bin";
    for Create_Missing_Dirs use "True";
-   for Main use ("sprites.adb", "grids.adb", "multi_palette.adb",
-                 "simple_text.adb", "text_dirty.adb");
+   for Main use ("sprites.adb",
+                 "grids.adb",
+                 "multi_palette.adb",
+                 "simple_text.adb",
+                 "text_dirty.adb",
+                 "collision_text.adb",
+                 "collision_sprite.adb",
+                 "collision_grids.adb");
 
 end Tests;

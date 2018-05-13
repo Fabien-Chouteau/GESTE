@@ -38,8 +38,10 @@ procedure Multi_Palette is
      );
 
    Bank_A : aliased Console_GESTE.Tile_Bank.Instance (Tiles'Access,
+                                                      Console_GESTE.No_Collisions,
                                                       Palette_A'Access);
    Bank_B : aliased Console_GESTE.Tile_Bank.Instance (Tiles'Access,
+                                                      Console_GESTE.No_Collisions,
                                                       Palette_B'Access);
 
    Sprite_A : aliased Console_GESTE.Sprite.Instance (Bank       => Bank_A'Access,
