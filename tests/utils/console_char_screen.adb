@@ -18,7 +18,7 @@ package body Console_Char_Screen is
          Screen (X, Y) := C;
          if X = XE then
             X := XS;
-            if X = YE then
+            if Y = YE then
                Y := YS;
             else
                Y := Y + 1;
