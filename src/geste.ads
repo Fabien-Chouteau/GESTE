@@ -252,11 +252,11 @@ private
    -- Layer --
 
    type Layer_Type is abstract tagged limited record
-      Pt                  : Point := (0, 0);
-      Next                : Layer.Ref := null;
-      Dirty               : Boolean := True;
-      Last_Pt             : Point := (0, 0);
-      Collissions_Enabled : Boolean := False;
+      Pt                 : Point := (0, 0);
+      Next               : Layer.Ref := null;
+      Dirty              : Boolean := True;
+      Last_Pt            : Point := (0, 0);
+      Collisions_Enabled : Boolean := False;
    end record;
 
    function Pix (This : Layer_Type; X, Y : Integer) return Output_Color

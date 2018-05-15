@@ -79,7 +79,7 @@ package body GESTE is
                                 Enable : Boolean := True)
    is
    begin
-      This.Collissions_Enabled := Enable;
+      This.Collisions_Enabled := Enable;
    end Enable_Collisions;
 
    -----------
@@ -290,7 +290,7 @@ package body GESTE is
    begin
 
       while L /= null loop
-         if L.Collissions_Enabled and then L.Collides (Pt.X, Pt.Y) then
+         if L.Collisions_Enabled and then L.Collides (Pt.X, Pt.Y) then
             return True;
          end if;
          L := L.Next;
