@@ -1,6 +1,4 @@
-with "../geste";
-
-project Tests is
+project Tests extends "../geste" is
 
    for Languages use ("Ada");
    for Source_Dirs use ("src", "utils");

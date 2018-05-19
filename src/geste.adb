@@ -366,8 +366,9 @@ package body GESTE is
             Y := Pt.Y - L.Pt.Y;
             if X in 0 .. L.A_Width - 1
               and then
-                Y in 0 .. L.A_Height - 1
-                and then L.Collides (Pt.X, Pt.Y)
+               Y in 0 .. L.A_Height - 1
+              and then
+               L.Collides (X, Y)
             then
                return True;
             end if;

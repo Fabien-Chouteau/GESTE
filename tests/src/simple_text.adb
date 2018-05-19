@@ -8,30 +8,18 @@ procedure Simple_Text is
 
    package Font_A renames GESTE_Fonts.FreeMono6pt7b;
 
-   type Color is range 1 .. 3;
-
-   package Console_GESTE is new GESTE
-     (Output_Color => Character,
-      Color_Index  => Color,
-      Tile_Index   => Natural,
-      No_Tile      => 0,
-      Transparent  => ' ',
-      Tile_Size    => 5);
-
    package Console_Screen is new Console_Char_Screen
      (Width       => 42,
       Height      => 35,
       Buffer_Size => 256,
-      Init_Char   => ' ',
-      Engine      => Console_GESTE);
+      Init_Char   => ' ');
 
-
-   Text_A : aliased Console_GESTE.Text.Instance
+   Text_A : aliased GESTE.Text.Instance
      (Font_A.Font, 6, 3, '#', ' ');
 begin
 
    Text_A.Move ((0, 0));
-   Console_GESTE.Add (Text_A'Access, 0);
+   GESTE.Add (Text_A'Unrestricted_Access, 0);
 
    Text_A.Cursor (1, 1);
 
@@ -68,12 +56,12 @@ begin
       Ada.Text_IO.Put_Line ("NUL expected for out of bounds position");
    end if;
 
-   Console_GESTE.Render_Window
+   GESTE.Render_Window
      (Window           => Console_Screen.Screen_Rect,
       Background       => ' ',
       Buffer           => Console_Screen.Buffer,
-      Push_Pixels      => Console_Screen.Push_Pixels'Access,
-      Set_Drawing_Area => Console_Screen.Set_Drawing_Area'Access);
+      Push_Pixels      => Console_Screen.Push_Pixels'Unrestricted_Access,
+      Set_Drawing_Area => Console_Screen.Set_Drawing_Area'Unrestricted_Access);
 
    Console_Screen.Print;
    Ada.Text_IO.New_Line;
@@ -81,12 +69,12 @@ begin
    Text_A.Invert_All;
    Text_A.Set_Colors_All ('-', ' ');
 
-   Console_GESTE.Render_Window
+   GESTE.Render_Window
      (Window           => Console_Screen.Screen_Rect,
       Background       => ' ',
       Buffer           => Console_Screen.Buffer,
-      Push_Pixels      => Console_Screen.Push_Pixels'Access,
-      Set_Drawing_Area => Console_Screen.Set_Drawing_Area'Access);
+      Push_Pixels      => Console_Screen.Push_Pixels'Unrestricted_Access,
+      Set_Drawing_Area => Console_Screen.Set_Drawing_Area'Unrestricted_Access);
 
    Console_Screen.Print;
    Ada.Text_IO.New_Line;

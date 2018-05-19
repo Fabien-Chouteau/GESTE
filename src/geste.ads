@@ -33,19 +33,7 @@
 ------------------------------------------------------------------------------
 
 with GESTE_Fonts;
-
-generic
-   type Output_Color is (<>);
-
-   type Color_Index is (<>);
-
-   type Tile_Index is (<>);
-
-   Transparent  : Output_Color;
-
-   No_Tile : Tile_Index;
-
-   Tile_Size : Natural;
+with GESTE_Config; use GESTE_Config;
 
 package GESTE is
 

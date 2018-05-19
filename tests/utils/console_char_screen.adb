@@ -12,7 +12,7 @@ package body Console_Char_Screen is
    -- Push_Pixels --
    -----------------
 
-   procedure Push_Pixels (Buffer : Engine.Output_Buffer) is
+   procedure Push_Pixels (Buffer : GESTE.Output_Buffer) is
    begin
       for C of Buffer loop
          Screen (X, Y) := C;
@@ -33,18 +33,18 @@ package body Console_Char_Screen is
    -- Set_Drawing_Area --
    ----------------------
 
-   procedure Set_Drawing_Area (Area : Engine.Rect) is
+   procedure Set_Drawing_Area (Area : GESTE.Rect) is
    begin
       XS := Area.TL.X;
       YS := Area.TL.Y;
       XE := Area.BR.X;
       YE := Area.BR.Y;
 
-      XS := Engine.Coordinate'Max (0, XS);
-      YS := Engine.Coordinate'Max (0, YS);
+      XS := GESTE.Coordinate'Max (0, XS);
+      YS := GESTE.Coordinate'Max (0, YS);
 
-      XE := Engine.Coordinate'Min (Width - 1, XE);
-      YE := Engine.Coordinate'Min (Height - 1, YE);
+      XE := GESTE.Coordinate'Min (Width - 1, XE);
+      YE := GESTE.Coordinate'Min (Height - 1, YE);
 
       X := XS;
       Y := YS;
@@ -102,7 +102,7 @@ package body Console_Char_Screen is
       Expected : Boolean)
    is
    begin
-      if Engine.Collides ((X, Y)) /= Expected then
+      if GESTE.Collides ((X, Y)) /= Expected then
          if Expected then
             Put_Line ("Collision expected at X:" & X'Img & " Y:" & Y'Img);
          else
