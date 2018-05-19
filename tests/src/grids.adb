@@ -57,7 +57,7 @@ begin
    Console_Screen.Verbose;
 
    Grid.Move ((1, 1));
-   Console_GESTE.Add (Grid'Access);
+   Console_GESTE.Add (Grid'Access, 0);
 
    Console_GESTE.Render_Window
      (Window           => Console_Screen.Screen_Rect,

@@ -31,7 +31,7 @@ procedure Simple_Text is
 begin
 
    Text_A.Move ((0, 0));
-   Console_GESTE.Add (Text_A'Access);
+   Console_GESTE.Add (Text_A'Access, 0);
 
    Text_A.Cursor (1, 1);
 

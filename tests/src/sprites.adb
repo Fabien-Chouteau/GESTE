@@ -62,10 +62,10 @@ begin
       raise Program_Error;
    end if;
 
-   Console_GESTE.Add (Sprite_A'Access);
+   Console_GESTE.Add (Sprite_A'Access, 0);
 
    Sprite_B.Move ((10, 4));
-   Console_GESTE.Add (Sprite_B'Access);
+   Console_GESTE.Add (Sprite_B'Access, 0);
 
    Console_GESTE.Render_Window
      (Window           => Console_Screen.Screen_Rect,

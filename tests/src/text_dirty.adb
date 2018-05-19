@@ -47,7 +47,7 @@ begin
 
    Text_A.Put ("test");
    Text_A.Move ((0, 0));
-   Console_GESTE.Add (Text_A'Access);
+   Console_GESTE.Add (Text_A'Access, 0);
 
    Console_GESTE.Render_Window
      (Window           => Console_Screen.Screen_Rect,

@@ -68,10 +68,10 @@ procedure Collision_Grids is
 
 begin
    Grid.Move ((0, 0));
-   Console_GESTE.Add (Grid'Access);
+   Console_GESTE.Add (Grid'Access, 0);
 
    Grid_No_Collisions.Move ((6, 0));
-   Console_GESTE.Add (Grid_No_Collisions'Access);
+   Console_GESTE.Add (Grid_No_Collisions'Access, 0);
 
    Console_GESTE.Render_Window
      (Window           => Console_Screen.Screen_Rect,

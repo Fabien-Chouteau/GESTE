@@ -207,7 +207,12 @@ package GESTE is
 
    -- Engine --
 
-   procedure Add (L : not null Layer.Ref);
+   type Layer_Priority is new Natural;
+
+   procedure Add (L        : not null Layer.Ref;
+                  Priority : Layer_Priority);
+
+   procedure Remove (L : not null Layer.Ref);
 
    subtype Output_Buffer_Index is Natural;
 
@@ -252,8 +257,11 @@ private
    -- Layer --
 
    type Layer_Type is abstract tagged limited record
+      Next               : Layer.Ref      := null;
+      Prev               : Layer.Ref      := null;
+      Prio               : Layer_Priority := 0;
+
       Pt                 : Point := (0, 0);
-      Next               : Layer.Ref := null;
       Dirty              : Boolean := True;
       Last_Pt            : Point := (0, 0);
       Collisions_Enabled : Boolean := False;

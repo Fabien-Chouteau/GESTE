@@ -77,13 +77,13 @@ procedure Collision_Sprite is
 
 begin
    Sprite_A.Move ((0, 0));
-   Console_GESTE.Add (Sprite_A'Access);
+   Console_GESTE.Add (Sprite_A'Access, 0);
 
    Sprite_B.Move ((0, 0));
-   Console_GESTE.Add (Sprite_B'Access);
+   Console_GESTE.Add (Sprite_B'Access, 0);
 
    Sprite_No_Collisions.Move ((5, 0));
-   Console_GESTE.Add (Sprite_No_Collisions'Access);
+   Console_GESTE.Add (Sprite_No_Collisions'Access, 0);
 
    Console_GESTE.Render_Window
      (Window           => Console_Screen.Screen_Rect,

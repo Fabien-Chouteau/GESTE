@@ -55,10 +55,10 @@ begin
    Console_Screen.Verbose;
 
    Sprite_A.Move ((1, 1));
-   Console_GESTE.Add (Sprite_A'Access);
+   Console_GESTE.Add (Sprite_A'Access, 0);
 
    Sprite_B.Move ((10, 4));
-   Console_GESTE.Add (Sprite_B'Access);
+   Console_GESTE.Add (Sprite_B'Access, 0);
 
    Console_GESTE.Render_Window
      (Window           => Console_Screen.Screen_Rect,

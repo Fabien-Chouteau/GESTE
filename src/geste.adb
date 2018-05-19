@@ -113,12 +113,69 @@ package body GESTE is
    -- Add --
    ---------
 
-   procedure Add (L : not null Layer.Ref) is
+   procedure Add (L        : not null Layer.Ref;
+                  Priority : Layer_Priority) is
+      Prev : Layer.Ref := null;
+      Cur  : Layer.Ref := Layer_List;
    begin
-      L.Next := Layer_List;
-      Layer_List := L;
+      L.Prio := Priority;
+
+      while Cur /= null and then Cur.Prio > Priority loop
+         Prev := Cur;
+         Cur := Cur.Next;
+      end loop;
+
+      if Prev = null then
+         --  Head
+         if Layer_List /= null then
+            Layer_List.Prev := L;
+         end if;
+
+         L.Next := Layer_List;
+         L.Prev := null;
+         Layer_List := L;
+      else
+         if Cur = null then
+            --  Tail
+            Prev.Next := L;
+            L.Prev := Prev;
+            L.Next := null;
+         else
+            L.Prev := Prev;
+            Prev.Next := L;
+
+            L.Next := Cur;
+            Cur.Prev := L;
+         end if;
+      end if;
       L.Dirty := True;
    end Add;
+
+   ------------
+   -- Remove --
+   ------------
+
+   procedure Remove (L : not null Layer.Ref) is
+   begin
+
+      if L.Next /= null then
+         L.Next.Prev := L.Prev;
+      end if;
+
+      if L.Prev /= null then
+         L.Prev.Next := L.Next;
+      else
+         if Layer_List = L then
+            Layer_List := L.Next;
+         else
+            raise Program_Error with "Layer not in the list";
+         end if;
+      end if;
+
+      L.Next := null;
+      L.Prev := null;
+
+   end Remove;
 
    -------------------
    -- Render_Window --
