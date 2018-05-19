@@ -87,14 +87,14 @@ package body GESTE is
    -----------
 
    function Width (This : Layer_Type) return Natural
-   is (0);
+   is (This.A_Width);
 
    ------------
    -- Height --
    ------------
 
    function Height (This : Layer_Type) return Natural
-   is (0);
+   is (This.A_Height);
 
    --------------
    -- Set_Tile --
@@ -149,6 +149,7 @@ package body GESTE is
          end if;
       end if;
       L.Dirty := True;
+      L.Update_Size;
    end Add;
 
    ------------
@@ -190,6 +191,8 @@ package body GESTE is
       C     : Output_Color;
       Index : Output_Buffer_Index := Buffer'First;
       L     : Layer.Ref;
+      PX    : Integer;
+      PY    : Integer;
    begin
       --  For each pixel that we want to render, we look for the color of that
       --  pixel inside the first layer. If that color is not the Transparent
@@ -215,9 +218,18 @@ package body GESTE is
 
             L := Layer_List;
             Layer_Loop : while L /= null loop
-               C := L.Pix (X, Y);
-               if C /= Transparent then
-                  exit Layer_Loop;
+
+               PX := X - L.Pt.X;
+               PY := Y - L.Pt.Y;
+
+               if PX in 0 .. L.A_Width - 1
+                 and then
+                   PY in 0 .. L.A_Height - 1
+               then
+                  C := L.Pix (PX, PY);
+                  if C /= Transparent then
+                     exit Layer_Loop;
+                  end if;
                end if;
                L := L.Next;
             end loop Layer_Loop;
@@ -269,8 +281,8 @@ package body GESTE is
       while L /= null loop
          X0 := Min (X0, L.Pt.X);
          Y0 := Min (Y0, L.Pt.Y);
-         X1 := Max (X1, L.Pt.X + L.Width - 1);
-         Y1 := Max (Y1, L.Pt.Y + L.Height - 1);
+         X1 := Max (X1, L.Pt.X + L.A_Width - 1);
+         Y1 := Max (Y1, L.Pt.Y + L.A_Height - 1);
 
          L.Dirty := False;
          L := L.Next;
@@ -310,8 +322,8 @@ package body GESTE is
 
             --  Find the window that contains both the layer now and the layer
             --  at its previous location.
-            W := L.Width;
-            H := L.Height;
+            W := L.A_Width;
+            H := L.A_Height;
             X0 := Min (L.Last_Pt.X, L.Pt.X);
             Y0 := Min (L.Last_Pt.Y, L.Pt.Y);
             X1 := Max (L.Last_Pt.X + W, L.Pt.X + W - 1);
@@ -344,32 +356,37 @@ package body GESTE is
 
    function Collides (Pt : Point) return Boolean is
       L : Layer.Ref := Layer_List;
+      X : Integer;
+      Y : Integer;
    begin
 
       while L /= null loop
-         if L.Collisions_Enabled and then L.Collides (Pt.X, Pt.Y) then
-            return True;
+         if L.Collisions_Enabled then
+            X := Pt.X - L.Pt.X;
+            Y := Pt.Y - L.Pt.Y;
+            if X in 0 .. L.A_Width - 1
+              and then
+                Y in 0 .. L.A_Height - 1
+                and then L.Collides (Pt.X, Pt.Y)
+            then
+               return True;
+            end if;
          end if;
          L := L.Next;
       end loop;
       return False;
    end Collides;
 
-   -----------
-   -- Width --
-   -----------
+   -----------------
+   -- Update_Size --
+   -----------------
 
    overriding
-   function Width (This : Grid_Type) return Natural
-   is (This.Data'Length (1) * Tile_Size);
-
-   ------------
-   -- Height --
-   ------------
-
-   overriding
-   function Height (This : Grid_Type) return Natural
-   is (This.Data'Length (2) * Tile_Size);
+   procedure Update_Size (This : in out Grid_Type) is
+   begin
+      This.A_Width := This.Data'Length (1) * Tile_Size;
+      This.A_Height := This.Data'Length (2) * Tile_Size;
+   end Update_Size;
 
    ---------
    -- Pix --
@@ -380,27 +397,16 @@ package body GESTE is
                  X, Y : Integer)
                  return Output_Color
    is
-      Pt      : Point;
       Tile_ID : Tile_Index;
       C       : Color_Index;
    begin
-      Pt.X := X - This.Pt.X;
-      Pt.Y := Y - This.Pt.Y;
-
-      if Pt.X not in 0 .. (This.Data'Length (1) * Tile_Size) - 1
-        or else
-          Pt.Y not in 0 .. (This.Data'Length (2) * Tile_Size) - 1
-      then
-         return Transparent;
-      end if;
-
-      Tile_ID := This.Data (This.Data'First (1) + (Pt.X / Tile_Size),
-                            This.Data'First (2) + (Pt.Y / Tile_Size));
+      Tile_ID := This.Data (This.Data'First (1) + (X / Tile_Size),
+                            This.Data'First (2) + (Y / Tile_Size));
 
       if Tile_ID = No_Tile then
          return Transparent;
       else
-         C := This.Bank.Tiles (Tile_ID) (Pt.X mod Tile_Size, Pt.Y mod Tile_Size);
+         C := This.Bank.Tiles (Tile_ID) (X mod Tile_Size, Y mod Tile_Size);
          return This.Bank.Palette (C);
       end if;
    end Pix;
@@ -414,29 +420,29 @@ package body GESTE is
                       X, Y : Integer)
                       return Boolean
    is
-      Pt      : Point;
       Tile_ID : Tile_Index;
    begin
-      Pt.X := X - This.Pt.X;
-      Pt.Y := Y - This.Pt.Y;
-
-      if Pt.X not in 0 .. (This.Data'Length (1) * Tile_Size) - 1
-        or else
-          Pt.Y not in 0 .. (This.Data'Length (2) * Tile_Size) - 1
-      then
-         return False;
-      end if;
-
-      Tile_ID := This.Data (This.Data'First (1) + (Pt.X / Tile_Size),
-                            This.Data'First (2) + (Pt.Y / Tile_Size));
+      Tile_ID := This.Data (This.Data'First (1) + (X / Tile_Size),
+                            This.Data'First (2) + (Y / Tile_Size));
 
       if Tile_ID = No_Tile or else This.Bank.Collisions = null then
          return False;
       else
-         return This.Bank.Collisions (Tile_ID) (Pt.X mod Tile_Size,
-                                                Pt.Y mod Tile_Size);
+         return This.Bank.Collisions (Tile_ID) (X mod Tile_Size,
+                                                Y mod Tile_Size);
       end if;
    end Collides;
+
+   -----------------
+   -- Update_Size --
+   -----------------
+
+   overriding
+   procedure Update_Size (This : in out Sprite_Type) is
+   begin
+      This.A_Width := Tile_Size;
+      This.A_Height := Tile_Size;
+   end Update_Size;
 
    ---------
    -- Pix --
@@ -447,22 +453,10 @@ package body GESTE is
                  X, Y : Integer)
                  return Output_Color
    is
-      Pt : Point;
       C  : Color_Index;
    begin
-      Pt.X := X - This.Pt.X;
-      Pt.Y := Y - This.Pt.Y;
-
-      if Pt.X not in 0 .. Tile_Size - 1
-        or else
-          Pt.Y not in 0 .. Tile_Size - 1
-      then
-         return Transparent;
-      end if;
-
-      C := This.Bank.Tiles (This.Tile) (Pt.X, Pt.Y);
+      C := This.Bank.Tiles (This.Tile) (X, Y);
       return This.Bank.Palette (C);
-
    end Pix;
 
    --------------
@@ -474,20 +468,9 @@ package body GESTE is
                       X, Y : Integer)
                       return Boolean
    is
-      Pt : Point;
    begin
-      Pt.X := X - This.Pt.X;
-      Pt.Y := Y - This.Pt.Y;
-
-      if Pt.X not in 0 .. Tile_Size - 1
-        or else
-          Pt.Y not in 0 .. Tile_Size - 1
-      then
-         return False;
-      end if;
-
       if This.Bank.Collisions /= null then
-         return This.Bank.Collisions (This.Tile) (Pt.X, Pt.Y);
+         return This.Bank.Collisions (This.Tile) (X, Y);
       else
          return False;
       end if;
@@ -645,11 +628,6 @@ package body GESTE is
       end loop;
    end Invert_All;
 
-   function Text_Bitmap_Set (This     : Text_Type;
-                             X, Y     : Integer;
-                             C        : out Char_Property)
-                             return Boolean;
-
    ---------------------
    -- Text_Bitmap_Set --
    ---------------------
@@ -697,6 +675,17 @@ package body GESTE is
       end if;
    end Text_Bitmap_Set;
 
+   -----------------
+   -- Update_Size --
+   -----------------
+
+   overriding
+   procedure Update_Size (This : in out Text_Type) is
+   begin
+      This.A_Width := This.Number_Of_Columns * This.Da_Font.Glyph_Width;
+      This.A_Height := This.Number_Of_Lines * This.Da_Font.Glyph_Height;
+   end Update_Size;
+
    ---------
    -- Pix --
    ---------
@@ -706,23 +695,12 @@ package body GESTE is
                  X, Y : Integer)
                  return Output_Color
    is
-      Pt : Point;
       GW : constant Positive := This.Da_Font.Glyph_Width;
       GH : constant Positive := This.Da_Font.Glyph_Height;
       C : Char_Property;
 
    begin
-      Pt.X := X - This.Pt.X;
-      Pt.Y := Y - This.Pt.Y;
-
-      if Pt.X not in 0 .. This.Number_Of_Columns * GW - 1
-        or else
-          Pt.Y not in 0 .. This.Number_Of_Lines * GH - 1
-      then
-         return Transparent;
-      end if;
-
-      if Text_Bitmap_Set (This, Pt.X, Pt.Y, C) then
+      if Text_Bitmap_Set (This, X, Y, C) then
          return C.FG;
       else
          return C.BG;
@@ -738,22 +716,9 @@ package body GESTE is
                       X, Y : Integer)
                       return Boolean
    is
-      Pt : Point;
-      GW : constant Positive := This.Da_Font.Glyph_Width;
-      GH : constant Positive := This.Da_Font.Glyph_Height;
       C : Char_Property;
    begin
-      Pt.X := X - This.Pt.X;
-      Pt.Y := Y - This.Pt.Y;
-
-      if Pt.X not in 0 .. This.Number_Of_Columns * GW - 1
-        or else
-          Pt.Y not in 0 .. This.Number_Of_Lines * GH - 1
-      then
-         return False;
-      end if;
-
-      return Text_Bitmap_Set (This, Pt.X, Pt.Y, C);
+      return Text_Bitmap_Set (This, X, Y, C);
    end Collides;
 
 end GESTE;

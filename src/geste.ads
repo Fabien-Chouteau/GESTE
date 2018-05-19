@@ -262,6 +262,8 @@ private
       Prio               : Layer_Priority := 0;
 
       Pt                 : Point := (0, 0);
+      A_Width            : Natural := 0;
+      A_Height           : Natural := 0;
       Dirty              : Boolean := True;
       Last_Pt            : Point := (0, 0);
       Collisions_Enabled : Boolean := False;
@@ -272,6 +274,9 @@ private
 
    function Collides (This : Layer_Type; X, Y : Integer) return Boolean
    is (False);
+
+   procedure Update_Size (This : in out Layer_Type)
+   is null;
 
    -- Grid --
 
@@ -285,13 +290,11 @@ private
    is new Layer_Type with null record;
 
    overriding
-   function Width (This : Grid_Type) return Natural;
+   procedure Update_Size (This : in out Grid_Type);
 
    overriding
-   function Height (This : Grid_Type) return Natural;
-
-   overriding
-   function Pix (This : Grid_Type; X, Y : Integer) return Output_Color;
+   function Pix (This : Grid_Type; X, Y : Integer) return Output_Color
+     with Pre => X in 0 .. This.Width - 1 and then Y in 0 .. This.Height - 1;
 
    overriding
    function Collides (This : Grid_Type; X, Y : Integer) return Boolean;
@@ -308,15 +311,11 @@ private
    end record;
 
    overriding
-   function Width (This : Sprite_Type) return Natural
-   is (Tile_Size);
+   procedure Update_Size (This : in out Sprite_Type);
 
    overriding
-   function Height (This : Sprite_Type) return Natural
-   is (Tile_Size);
-
-   overriding
-   function Pix (This : Sprite_Type; X, Y : Integer) return Output_Color;
+   function Pix (This : Sprite_Type; X, Y : Integer) return Output_Color
+     with Pre => X in 0 .. This.Width - 1 and then Y in 0 .. This.Height - 1;
 
    overriding
    function Collides (This : Sprite_Type; X, Y : Integer) return Boolean;
@@ -348,18 +347,17 @@ private
       CY : Positive := 1;
    end record;
 
-   overriding
-   function Width (This : Text_Type) return Natural
-   is (This.Number_Of_Columns * This.Da_Font.Glyph_Width);
-   --  TODO: This is constant and could be computed once and for all
+   function Text_Bitmap_Set (This     : Text_Type;
+                             X, Y     : Integer;
+                             C        : out Char_Property)
+                             return Boolean;
 
    overriding
-   function Height (This : Text_Type) return Natural
-   is (This.Number_Of_Lines * This.Da_Font.Glyph_Height);
-   --  TODO: This is constant and could be computed once and for all
+   procedure Update_Size (This : in out Text_Type);
 
    overriding
-   function Pix (This : Text_Type; X, Y : Integer) return Output_Color;
+   function Pix (This : Text_Type; X, Y : Integer) return Output_Color
+     with Pre => X in 0 .. This.Width - 1 and then Y in 0 .. This.Height - 1;
 
    overriding
    function Collides (This : Text_Type; X, Y : Integer) return Boolean;
