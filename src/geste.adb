@@ -696,8 +696,6 @@ package body GESTE is
                  X, Y : Integer)
                  return Output_Color
    is
-      GW : constant Positive := This.Da_Font.Glyph_Width;
-      GH : constant Positive := This.Da_Font.Glyph_Height;
       C : Char_Property;
 
    begin
