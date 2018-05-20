@@ -96,18 +96,47 @@ package body GESTE is
    function Height (This : Layer_Type) return Natural
    is (This.A_Height);
 
-   --------------
-   -- Set_Tile --
-   --------------
+   ----------
+   -- Tile --
+   ----------
 
-   procedure Set_Tile (This        : in out Sprite_Type;
-                       Tile        : Tile_Index;
-                       Orientation : Integer)
+   procedure Set_Tile (This : in out Sprite_Type;
+                       Tile : Tile_Index)
    is
    begin
-      This.Tile := Tile;
-      This.Orientation := Orientation;
+      if This.Tile /= Tile then
+         This.Tile := Tile;
+         This.Dirty := True;
+      end if;
    end Set_Tile;
+
+   -------------------
+   -- Flip_Vertical --
+   -------------------
+
+   procedure Flip_Vertical (This : in out Sprite_Type;
+                            Flip : Boolean := True)
+   is
+   begin
+      if This.V_Flip /= Flip then
+         This.V_Flip := Flip;
+         This.Dirty := True;
+      end if;
+   end Flip_Vertical;
+
+   ---------------------
+   -- Flip_Horizontal --
+   ---------------------
+
+   procedure Flip_Horizontal (This : in out Sprite_Type;
+                              Flip : Boolean := True)
+   is
+   begin
+      if This.H_Flip /= Flip then
+         This.H_Flip := Flip;
+         This.Dirty := True;
+      end if;
+   end Flip_Horizontal;
 
    ---------
    -- Add --
@@ -455,8 +484,19 @@ package body GESTE is
                  return Output_Color
    is
       C  : Color_Index;
+      PX : Integer := X;
+      PY : Integer := Y;
    begin
-      C := This.Bank.Tiles (This.Tile) (X, Y);
+
+      if This.V_Flip then
+         PX := Tile_Size - PX - 1;
+      end if;
+
+      if This.H_Flip then
+         PY := Tile_Size - PY - 1;
+      end if;
+
+      C := This.Bank.Tiles (This.Tile) (PX, PY);
       return This.Bank.Palette (C);
    end Pix;
 

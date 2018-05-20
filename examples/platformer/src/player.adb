@@ -1,5 +1,5 @@
 with GESTE;
-with GESTE_Config;
+with GESTE_Config;      use GESTE_Config;
 with GESTE.Maths_Types; use GESTE.Maths_Types;
 with GESTE.Physics;
 
@@ -19,11 +19,10 @@ package body Player is
       GESTE.No_Collisions,
       Game_Assets.Palette'Access);
 
-   P : aliased Player_Type (Tile_Bank'Access, 73);
+   P : aliased Player_Type (Tile_Bank'Access, 79);
 
    Max_Jump_Frame : constant := 7;
 
-   X, Y : Integer := 0;
    Jumping : Boolean := False;
    Do_Jump : Boolean := False;
    Jump_Cnt : Natural := 0;
@@ -35,12 +34,12 @@ package body Player is
 
    Collides : array (Collision_Points) of Boolean;
    Offset   : constant array (Collision_Points) of GESTE.Point
-     := (BL    => (-4, 6),
-         BR    => (4, 6),
-         Left  => (-6, 4),
-         Right => (6, 4),
-         TL    => (-4, -6),
-         TR    => (4, -6));
+     := (BL    => (-4, 7),
+         BR    => (4, 7),
+         Left  => (-6, 5),
+         Right => (6, 5),
+         TL    => (-4, -7),
+         TR    => (4, -7));
 
    Grounded : Boolean := False;
 
@@ -79,11 +78,16 @@ package body Player is
    ------------
 
    procedure Update is
-
-      Old_Y : constant Integer := Y;
-      Old_X : constant Integer := X;
       Old : Position_Type := P.Position;
    begin
+
+      if Going_Right then
+         P.Sprite.Flip_Vertical (False);
+         P.Sprite.Set_Tile (Tile_Index (79 + (Integer (Old.X) / 2) mod 3));
+      elsif Going_Left then
+         P.Sprite.Flip_Vertical (True);
+         P.Sprite.Set_Tile (Tile_Index (79 + (Integer (Old.X) / 2) mod 3));
+      end if;
 
       if Grounded then
          if Going_Right then

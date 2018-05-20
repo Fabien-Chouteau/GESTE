@@ -2,7 +2,7 @@ with Interfaces;
 
 package GESTE_Config is
 
-   type Color_Index is range  0 ..  17;
+   type Color_Index is range  0 ..  20;
 
    subtype Output_Color is Interfaces.Unsigned_16;
 
@@ -10,6 +10,6 @@ package GESTE_Config is
 
    Tile_Size : constant :=  16;
 
-   type Tile_Index is range 0 .. 78;
+   type Tile_Index is range 0 .. 82;
    No_Tile : constant Tile_Index := 0;
 end GESTE_Config;

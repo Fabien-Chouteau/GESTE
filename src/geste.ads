@@ -134,9 +134,14 @@ package GESTE is
                      Init_Frame : Tile_Index)
    is new Layer_Type with private;
 
-   procedure Set_Tile (This        : in out Sprite_Type;
-                       Tile        : Tile_Index;
-                       Orientation : Integer);
+   procedure Set_Tile (This : in out Sprite_Type;
+                       Tile : Tile_Index);
+
+   procedure Flip_Vertical (This : in out Sprite_Type;
+                            Flip : Boolean := True);
+
+   procedure Flip_Horizontal (This : in out Sprite_Type;
+                              Flip : Boolean := True);
 
    package Sprite is
       subtype Instance is Sprite_Type;
@@ -294,8 +299,9 @@ private
    type Sprite_Type (Bank       : not null Tile_Bank.Const_Ref;
                      Init_Frame : Tile_Index)
    is new Layer_Type with record
-      Tile        : Tile_Index := Init_Frame;
-      Orientation : Integer := 0;
+      Tile   : Tile_Index := Init_Frame;
+      V_Flip : Boolean := False;
+      H_Flip : Boolean := False;
    end record;
 
    overriding
