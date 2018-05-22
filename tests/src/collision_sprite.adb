@@ -1,4 +1,7 @@
 with GESTE;
+with GESTE.Sprite;
+with GESTE.Tile_Bank;
+
 with Ada.Text_IO;
 with Console_Char_Screen;
 

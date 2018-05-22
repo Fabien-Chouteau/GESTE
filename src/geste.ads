@@ -64,6 +64,8 @@ package GESTE is
    type Tile_Array is array (Tile_Index range <>) of Tile;
    type Tile_Array_Ref is access constant Tile_Array;
 
+   -- Collisions --
+
    type Tile_Collisions is array (0 .. Tile_Size - 1,
                                   0 .. Tile_Size - 1)
      of Boolean;
@@ -72,26 +74,8 @@ package GESTE is
      of Tile_Collisions;
 
    type Tile_Collisions_Array_Ref is access constant Tile_Collisions_Array;
+
    No_Collisions : constant Tile_Collisions_Array_Ref := null;
-
-   type Grid_Data is array (Natural range <>,
-                            Natural range <>)
-     of Tile_Index;
-   type Grid_Data_Ref is access constant Grid_Data;
-
-   -- Tile_Bank --
-
-   type Tile_Bank_Type (Tiles      : not null Tile_Array_Ref;
-                        Collisions :          Tile_Collisions_Array_Ref;
-                        Palette    :          Palette_Ref)
-   is tagged limited private;
-
-   package Tile_Bank is
-      subtype Instance is Tile_Bank_Type;
-      subtype Class is Instance'Class;
-      type Ref is access all Class;
-      type Const_Ref is access constant Class;
-   end Tile_Bank;
 
    -- Layer --
 
@@ -113,90 +97,6 @@ package GESTE is
       type Ref is access all Class;
       type Const_Ref is access constant Class;
    end Layer;
-
-   -- Grid --
-
-   type Grid_Type (Data : not null Grid_Data_Ref;
-                   Bank : not null Tile_Bank.Const_Ref)
-   is new Layer_Type with private;
-
-
-   package Grid is
-      subtype Instance is Grid_Type;
-      subtype Class is Instance'Class;
-      type Ref is access all Class;
-      type Const_Ref is access constant Class;
-   end Grid;
-
-   -- Sprite --
-
-   type Sprite_Type (Bank       : not null Tile_Bank.Const_Ref;
-                     Init_Frame : Tile_Index)
-   is new Layer_Type with private;
-
-   procedure Set_Tile (This : in out Sprite_Type;
-                       Tile : Tile_Index);
-
-   procedure Flip_Vertical (This : in out Sprite_Type;
-                            Flip : Boolean := True);
-
-   procedure Flip_Horizontal (This : in out Sprite_Type;
-                              Flip : Boolean := True);
-
-   package Sprite is
-      subtype Instance is Sprite_Type;
-      subtype Class is Instance'Class;
-      type Ref is access all Class;
-      type Const_Ref is access constant Class;
-   end Sprite;
-
-   -- Text --
-
-   type Text_Type (Da_Font           : not null GESTE_Fonts.Bitmap_Font_Ref;
-                   Number_Of_Columns : Positive;
-                   Number_Of_Lines   : Positive;
-                   Foreground        : Output_Color;
-                   Background        : Output_Color)
-   is new Layer_Type with private;
-
-   procedure Clear (This : in out Text_Type);
-   --  Erase all text and set the cursor to (1, 1)
-
-   procedure Cursor (This : in out Text_Type;
-                     X, Y : Positive);
-
-   procedure Put (This : in out Text_Type;
-                  C    : Character);
-
-   procedure Put (This : in out Text_Type;
-                  Str  : String);
-
-   function Char (This : in out Text_Type;
-                  X, Y : Positive)
-                  return Character;
-
-   procedure Set_Colors (This       : in out Text_Type;
-                         X, Y       : Positive;
-                         Foreground : Output_Color;
-                         Background : Output_Color);
-
-   procedure Set_Colors_All (This       : in out Text_Type;
-                             Foreground : Output_Color;
-                             Background : Output_Color);
-
-   procedure Invert (This     : in out Text_Type;
-                     X, Y     : Positive;
-                     Inverted : Boolean := True);
-
-   procedure Invert_All (This     : in out Text_Type;
-                         Inverted : Boolean := True);
-
-   package Text is
-      subtype Instance is Text_Type;
-      subtype Class is Instance'Class;
-      type Ref is access all Class;
-      type Const_Ref is access constant Class;
-   end Text;
 
    -- Engine --
 
@@ -240,13 +140,6 @@ package GESTE is
 
 private
 
-   -- Tile_Bank --
-
-   type Tile_Bank_Type (Tiles      : not null Tile_Array_Ref;
-                        Collisions :          Tile_Collisions_Array_Ref;
-                        Palette     :         Palette_Ref)
-   is tagged limited null record;
-
    -- Layer --
 
    type Layer_Type is abstract tagged limited record
@@ -270,91 +163,6 @@ private
 
    procedure Update_Size (This : in out Layer_Type)
    is null;
-
-   -- Grid --
-
-   type Grid_Map is array (Natural range <>, Natural range <>) of Tile_Index;
-   type Grid_Orientation is array (Natural range <>, Natural range <>) of Integer;
-
-   type Grid_Access is access all Grid_Type;
-
-   type Grid_Type (Data : not null Grid_Data_Ref;
-                   Bank : not null Tile_Bank.Const_Ref)
-   is new Layer_Type with null record;
-
-   overriding
-   procedure Update_Size (This : in out Grid_Type);
-
-   overriding
-   function Pix (This : Grid_Type; X, Y : Integer) return Output_Color
-     with Pre => X in 0 .. This.Width - 1 and then Y in 0 .. This.Height - 1;
-
-   overriding
-   function Collides (This : Grid_Type; X, Y : Integer) return Boolean;
-
-   -- Sprite --
-
-   type Sprite_Access is access all Grid_Type;
-
-   type Sprite_Type (Bank       : not null Tile_Bank.Const_Ref;
-                     Init_Frame : Tile_Index)
-   is new Layer_Type with record
-      Tile   : Tile_Index := Init_Frame;
-      V_Flip : Boolean := False;
-      H_Flip : Boolean := False;
-   end record;
-
-   overriding
-   procedure Update_Size (This : in out Sprite_Type);
-
-   overriding
-   function Pix (This : Sprite_Type; X, Y : Integer) return Output_Color
-     with Pre => X in 0 .. This.Width - 1 and then Y in 0 .. This.Height - 1;
-
-   overriding
-   function Collides (This : Sprite_Type; X, Y : Integer) return Boolean;
-
-   -- Text --
-
-   type Text_Access is access all Grid_Type;
-
-   type Char_Property is record
-      C        : Character;
-      Inverted : Boolean;
-      FG       : Output_Color;
-      BG       : Output_Color;
-   end record;
-
-   type Char_Matrix is array (Positive range <>, Positive range <>)
-     of Char_Property;
-
-   type Text_Type (Da_Font           : not null GESTE_Fonts.Bitmap_Font_Ref;
-                   Number_Of_Columns : Positive;
-                   Number_Of_Lines   : Positive;
-                   Foreground        : Output_Color;
-                   Background        : Output_Color)
-   is new Layer_Type with record
-      Matrix : Char_Matrix (1 .. Number_Of_Columns, 1 .. Number_Of_Lines) :=
-        (others => (others => (' ', False, Foreground, Background)));
-
-      CX : Positive := 1;
-      CY : Positive := 1;
-   end record;
-
-   function Text_Bitmap_Set (This     : Text_Type;
-                             X, Y     : Integer;
-                             C        : out Char_Property)
-                             return Boolean;
-
-   overriding
-   procedure Update_Size (This : in out Text_Type);
-
-   overriding
-   function Pix (This : Text_Type; X, Y : Integer) return Output_Color
-     with Pre => X in 0 .. This.Width - 1 and then Y in 0 .. This.Height - 1;
-
-   overriding
-   function Collides (This : Text_Type; X, Y : Integer) return Boolean;
 
    Layer_List : Layer.Ref := null;
 end GESTE;

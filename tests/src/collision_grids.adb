@@ -1,4 +1,7 @@
 with GESTE;
+with GESTE.Grid;
+with GESTE.Tile_Bank;
+
 with Ada.Text_IO;
 with Console_Char_Screen;
 
@@ -53,7 +56,7 @@ procedure Collision_Grids is
       GESTE.No_Collisions,
       Palette'Unrestricted_Access);
 
-   Grid_Data : aliased constant GESTE.Grid_Data :=
+   Grid_Data : aliased constant GESTE.Grid.Grid_Data :=
      ((1, 2),
       (0, 1));
 

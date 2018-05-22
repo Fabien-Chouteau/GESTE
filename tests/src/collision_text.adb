@@ -1,5 +1,6 @@
 
 with GESTE;
+with GESTE.Text;
 with Ada.Text_IO; use Ada.Text_IO;
 with Console_Char_Screen;
 with GESTE_Fonts.FreeMonoBold8pt7b;
