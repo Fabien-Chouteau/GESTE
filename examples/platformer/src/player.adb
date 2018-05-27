@@ -1,4 +1,6 @@
 with GESTE;
+with GESTE.Tile_Bank;
+with GESTE.Sprite;
 with GESTE_Config;      use GESTE_Config;
 with GESTE.Maths_Types; use GESTE.Maths_Types;
 with GESTE.Physics;
@@ -43,6 +45,8 @@ package body Player is
 
    Grounded : Boolean := False;
 
+   procedure Update_Collisions;
+
    -----------------------
    -- Update_Collisions --
    -----------------------
@@ -78,7 +82,7 @@ package body Player is
    ------------
 
    procedure Update is
-      Old : Position_Type := P.Position;
+      Old : constant Position_Type := P.Position;
    begin
 
       if Going_Right then

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#b0e2ff" nextlayerid="5" nextobjectid="1">
+<map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#b0e2ff" nextlayerid="6" nextobjectid="8">
  <tileset firstgid="1" source="tiles.tsx"/>
+ <tileset firstgid="79" source="pix.tsx"/>
  <layer id="3" name="Back" width="20" height="15">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

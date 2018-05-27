@@ -37,6 +37,12 @@ package body SDL_Display is
 
    procedure Set_Drawing_Area (Area : GESTE.Rect) is
    begin
+      XS := Area.TL.X;
+      YS := Area.TL.Y;
+      XE := Area.BR.X;
+      YE := Area.BR.Y;
+      X := XS;
+      Y := YS;
       if XS < 0 then
          raise Program_Error;
       end if;
@@ -49,12 +55,6 @@ package body SDL_Display is
       if YE >= Height then
          raise Program_Error;
       end if;
-      XS := Area.TL.X;
-      YS := Area.TL.Y;
-      XE := Area.BR.X;
-      YE := Area.BR.Y;
-      X := XS;
-      Y := YS;
    end Set_Drawing_Area;
 
    ------------

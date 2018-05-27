@@ -13,6 +13,7 @@ with Levels;
 with Player;
 
 with GESTE;
+with GESTE.Text;
 with GESTE_Config;
 with GESTE_Fonts.FreeMono5pt7b;
 

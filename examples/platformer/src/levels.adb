@@ -1,4 +1,3 @@
-with GESTE;
 
 with Game_Assets;
 with Game_Assets.Tileset;
@@ -7,7 +6,12 @@ with Game_Assets.Level_1;
 with Game_Assets.Level_2;
 with Game_Assets.Level_3;
 
-with Player;
+with GESTE;
+with GESTE.Tile_Bank;
+with GESTE.Grid;
+with GESTE.Text;
+with GESTE_Config;
+with GESTE_Fonts.FreeMono8pt7b;
 
 package body Levels is
 
@@ -15,6 +19,13 @@ package body Levels is
      (Game_Assets.Tileset.Tiles'Access,
       Game_Assets.Tileset_Collisions.Tiles'Access,
       Game_Assets.Palette'Access);
+
+   Lvl1_Text  : aliased GESTE.Text.Instance
+     (Da_Font           => GESTE_Fonts.FreeMono8pt7b.Font,
+      Number_Of_Columns => 18,
+      Number_Of_Lines   => 3,
+      Foreground        => 0,
+      Background        => GESTE_Config.Transparent);
 
    Lvl1_Front : aliased GESTE.Grid.Instance
      (Game_Assets.Level_1.Front.Data'Access,
@@ -64,6 +75,8 @@ package body Levels is
             Lvl1_Front.Move ((0, 0));
             GESTE.Add (Lvl1_Front'Access, 3);
 
+            Lvl1_Text.Move ((100, 10));
+            GESTE.Add (Lvl1_Text'Access, 4);
          when Lvl_2 =>
             Lvl2_Back.Move ((0, 0));
             GESTE.Add (Lvl2_Back'Access, 1);
@@ -100,6 +113,7 @@ package body Levels is
             GESTE.Remove (Lvl1_Back'Access);
             GESTE.Remove (Lvl1_Mid'Access);
             GESTE.Remove (Lvl1_Front'Access);
+            GESTE.Remove (Lvl1_Text'Access);
          when Lvl_2 =>
             GESTE.Remove (Lvl2_Back'Access);
             GESTE.Remove (Lvl2_Mid'Access);
@@ -111,4 +125,9 @@ package body Levels is
       end case;
    end Leave;
 
+begin
+   Lvl1_Text.Clear;
+   Lvl1_Text.Put ("Welcome to GESTE's" &
+                  "  platform game   " &
+                  "    example!");
 end Levels;
