@@ -272,6 +272,12 @@ package body GESTE is
          L := L.Next;
       end loop;
 
+      --  Apply screen limits
+      X0 := Max (Min_X, Min (Max_X, X0));
+      Y0 := Max (Min_Y, Min (Max_Y, Y0));
+      X1 := Max (Min_X, Min (Max_X, X1));
+      Y1 := Max (Min_Y, Min (Max_Y, Y1));
+
       if X1 >= X0 and then Y1 >= Y0 then
          Render_Window (((X0, Y0), (X1, Y1)),
                         Background,
