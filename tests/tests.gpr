@@ -14,6 +14,7 @@ project Tests extends "../geste" is
                  "collision_sprite.adb",
                  "collision_grids.adb",
                  "layer_priority.adb",
-                 "maths_test.adb");
+                 "maths_test.adb",
+                 "sprite_rotation.adb");
 
 end Tests;
