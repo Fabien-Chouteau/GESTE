@@ -34,7 +34,19 @@
 
 package GESTE.Maths_Types is
 
-   type Value is delta 0.001 digits 9;
+   Integer_Bits    : constant := 22;
+   Fractional_Bits : constant := 10;
+
+   pragma Compile_Time_Warning
+     (Integer_Bits + Fractional_Bits /= 32,
+      "Invalid number of bits in fixed-point definition");
+
+   V_Delta : constant := 2.0**(-Fractional_Bits);
+   V_Range : constant := 2.0**(Integer_Bits - 1);
+
+   type Value is delta V_Delta range -V_Range .. V_Range - V_Delta
+     with Size  => Integer_Bits + Fractional_Bits,
+          Small => V_Delta;
 
    type Dimensionless is new Value
      with
