@@ -65,6 +65,11 @@ package GESTE.Maths_Types is
                      Meter  => 1,
                      others => 0);
 
+   subtype Area_Value is Dimensionless
+     with
+       Dimension => (Meter  => 2,
+                     others => 0);
+
    subtype Mass_Value is  Dimensionless
      with
        Dimension => (Symbol => "kg",
@@ -97,6 +102,19 @@ package GESTE.Maths_Types is
                      Second   => -2,
                      others   => 0);
 
+   subtype Torque_Value is Dimensionless
+     with
+       Dimension => (Meter    => 2,
+                     Kilogram => 1,
+                     Second   => -2,
+                     others   => 0);
+
+   subtype Density_Value is Dimensionless
+     with
+       Dimension => (Meter    => 3,
+                     Kilogram => 1,
+                     others   => 0);
+
    subtype Angle_Value is Dimensionless
      with
       Dimension => (Symbol => "rad",
@@ -109,7 +127,7 @@ package GESTE.Maths_Types is
    s   : constant Time_Value   := 1.0;
    N   : constant Force_Value  := 1.0;
    rad : constant Angle_Value  := 1.0;
-   Pi  : constant Angle_Value  := 3.14;
+   Pi  : constant Angle_Value  := 3.1415926535897932384626433;
 
    pragma Warnings (On, "*assumed to be*");
 
@@ -118,6 +136,10 @@ package GESTE.Maths_Types is
    end record;
 
    Origin : constant Position_Type := (0.0 * m, 0.0 * m);
+
+   type Vect is record
+      X, Y : Dimensionless;
+   end record;
 
    type Rectangle is record
       Org    : Position_Type;

@@ -13,6 +13,7 @@ project Tests extends "../geste" is
                  "collision_text.adb",
                  "collision_sprite.adb",
                  "collision_grids.adb",
-                 "layer_priority.adb");
+                 "layer_priority.adb",
+                 "maths_test.adb");
 
 end Tests;

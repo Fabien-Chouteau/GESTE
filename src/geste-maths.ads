@@ -46,4 +46,17 @@ package GESTE.Maths is
 
    function To_Rad (A : Dimensionless) return Angle_Value;
 
+   function "-" (V : Vect) return Vect;
+   function "*" (V : Vect; F : Force_Value) return Force_Vect;
+   function "*" (F : Force_Value; V : Vect) return Force_Vect;
+
+   function "*" (V : Force_Vect; F : Dimensionless) return Force_Vect;
+   function "*" (F : Dimensionless; V : Force_Vect) return Force_Vect;
+
+   function Sqrt (V : Dimensionless) return Dimensionless;
+
+   function Magnitude (V : Force_Vect) return Force_Value;
+   function Magnitude (V : Acceleration_Vect) return Acceleration_Value;
+   function Magnitude (V : Speed_Vect) return Speed_Value;
+
 end GESTE.Maths;

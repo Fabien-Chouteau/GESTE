@@ -47,7 +47,7 @@ package body GESTE.Maths is
       return Dimensionless
    is
    begin
-      return Sine_Table (Unsigned_32 (A * Sine_Alpha) and (Sine_Table_Size - 1));
+      return Sine_Table (Unsigned_32 (Integer (A * Sine_Alpha) mod (2**30)) and (Sine_Table_Size - 1));
    end Sin;
 
    ---------
@@ -59,7 +59,7 @@ package body GESTE.Maths is
       return Dimensionless
    is
    begin
-      return Cos_Table (Unsigned_32 (A * Cos_Alpha) and (Cos_Table_Size - 1));
+      return Cos_Table (Unsigned_32 (Integer (A * Cos_Alpha) mod (2**30)) and (Cos_Table_Size - 1));
    end Cos;
 
    ----------------
@@ -76,5 +76,84 @@ package body GESTE.Maths is
    function To_Rad (A : Dimensionless) return Angle_Value
    is (Angle_Value (Angle_Value (A) * Angle_Value (Pi * 2.0)) / Angle_Value (360.0));
 
+   ---------
+   -- "-" --
+   ---------
+
+   function "-" (V : Vect) return Vect
+   is (-V.X, -V.Y);
+
+   ---------
+   -- "*" --
+   ---------
+
+   function "*" (V : Vect; F : Force_Value) return Force_Vect
+   is (V.X * F, V.Y * F);
+
+   ---------
+   -- "*" --
+   ---------
+
+   function "*" (F : Force_Value; V : Vect) return Force_Vect
+   is (V.X * F, V.Y * F);
+
+   ---------
+   -- "*" --
+   ---------
+
+   function "*" (V : Force_Vect; F : Dimensionless) return Force_Vect
+   is (V.X * F, V.Y * F);
+
+   ---------
+   -- "*" --
+   ---------
+
+   function "*" (F : Dimensionless; V : Force_Vect) return Force_Vect
+   is (V.X * F, V.Y * F);
+
+   ----------
+   -- Sqrt --
+   ----------
+
+   function Sqrt (V : Dimensionless) return Dimensionless is
+      A : Dimensionless;
+   begin
+      if V <= 0.0 then
+         return -1.0;
+      elsif V = 1.0 then
+         return 1.0;
+      end if;
+
+      A := V / 2;
+
+      for K in 1 .. Fractional_Bits loop
+         if A = 0.0 then
+            return 0.0;
+         end if;
+         A := (A + V / A) / 2.0;
+      end loop;
+      return A;
+   end Sqrt;
+
+   ---------------
+   -- Magnitude --
+   ---------------
+
+   function Magnitude (V : Force_Vect) return Force_Value
+   is (Sqrt (V.X * V.X + V.Y * V.Y));
+
+   ---------------
+   -- Magnitude --
+   ---------------
+
+   function Magnitude (V : Acceleration_Vect) return Acceleration_Value
+   is (Sqrt (V.X * V.X + V.Y * V.Y));
+
+   ---------------
+   -- Magnitude --
+   ---------------
+
+   function Magnitude (V : Speed_Vect) return Speed_Value
+   is (Sqrt (V.X * V.X + V.Y * V.Y));
 
 end GESTE.Maths;
