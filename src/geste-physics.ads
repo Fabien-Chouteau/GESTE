@@ -83,18 +83,26 @@ package GESTE.Physics is
    procedure Apply_Gravity (This : in out Object;
                             G    : Force_Value := 9.51 * N);
 
+   function Angle (This : Object) return Angle_Value;
+   procedure Set_Angle (This  : in out Object;
+                        Angle : Angle_Value);
+
+   function Direction (This : Object) return Vect;
+
    procedure Step (This    : in out Object;
                    Elapsed : Time_Value);
 
 private
 
    type Object is tagged limited record
-      Box : Hit_Box_Type := (Kind => None);
-      P   : Position_Type := Origin;
-      M   : Mass_Value := Mass_Value (0.0);
-      S   : Speed_Vect := No_Speed;
-      A   : Acceleration_Vect := No_Acceleration;
-      F   : Force_Vect := No_Force;
+      Box   : Hit_Box_Type := (Kind => None);
+      P     : Position_Type := Origin;
+      M     : Mass_Value := Mass_Value (0.0);
+      S     : Speed_Vect := No_Speed;
+      A     : Acceleration_Vect := No_Acceleration;
+      F     : Force_Vect := No_Force;
+
+      Angle : Angle_Value := Angle_Value (0.0);
    end record;
 
 end GESTE.Physics;

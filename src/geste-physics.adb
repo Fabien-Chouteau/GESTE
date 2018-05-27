@@ -32,6 +32,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with GESTE.Maths; use GESTE.Maths;
+
 package body GESTE.Physics is
 
    function Collide_Rect_Rect (A, B : Object'Class) return Boolean
@@ -370,6 +372,33 @@ package body GESTE.Physics is
    begin
       This.Apply_Force ((0.0 * N, -G * Dimensionless (This.Mass)));
    end Apply_Gravity;
+
+   -----------
+   -- Angle --
+   -----------
+
+   function Angle (This : Object) return Angle_Value
+   is (This.Angle);
+
+   ---------------
+   -- Set_Angle --
+   ---------------
+
+   procedure Set_Angle (This  : in out Object;
+                        Angle : Angle_Value)
+   is
+   begin
+      This.Angle := Angle;
+   end Set_Angle;
+
+   ---------------
+   -- Direction --
+   ---------------
+
+   function Direction (This : Object) return Vect is
+   begin
+      return (Sin (This.Angle), Cos (This.Angle));
+   end Direction;
 
    ----------
    -- Step --
