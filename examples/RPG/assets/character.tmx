@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-down" width="2" height="4" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="1">
+ <tileset firstgid="1" source="$princess.tsx"/>
+ <layer id="1" name="Down1" width="2" height="4">
+  <data encoding="csv">
+1,2,
+7,8,
+13,14,
+19,20
+</data>
+ </layer>
+ <layer id="3" name="Down2" width="2" height="4">
+  <data encoding="csv">
+3,4,
+9,10,
+15,16,
+21,22
+</data>
+ </layer>
+ <layer id="4" name="Down3" width="2" height="4">
+  <data encoding="csv">
+5,6,
+11,12,
+17,18,
+23,24
+</data>
+ </layer>
+ <layer id="5" name="Left1" width="2" height="4">
+  <data encoding="csv">
+25,26,
+31,32,
+37,38,
+43,44
+</data>
+ </layer>
+ <layer id="6" name="Left2" width="2" height="4">
+  <data encoding="csv">
+27,28,
+33,34,
+39,40,
+45,46
+</data>
+ </layer>
+ <layer id="7" name="Left3" width="2" height="4">
+  <data encoding="csv">
+29,30,
+35,36,
+41,42,
+47,48
+</data>
+ </layer>
+ <layer id="8" name="Right1" width="2" height="4">
+  <data encoding="csv">
+49,50,
+55,56,
+61,62,
+67,68
+</data>
+ </layer>
+ <layer id="9" name="Right2" width="2" height="4">
+  <data encoding="csv">
+51,52,
+57,58,
+63,64,
+69,70
+</data>
+ </layer>
+ <layer id="10" name="Right3" width="2" height="4">
+  <data encoding="csv">
+53,54,
+59,60,
+65,66,
+71,72
+</data>
+ </layer>
+ <layer id="11" name="Up1" width="2" height="4">
+  <data encoding="csv">
+73,74,
+79,80,
+85,86,
+91,92
+</data>
+ </layer>
+ <layer id="12" name="Up2" width="2" height="4">
+  <data encoding="csv">
+75,76,
+81,82,
+87,88,
+93,94
+</data>
+ </layer>
+ <layer id="13" name="Up3" width="2" height="4">
+  <data encoding="csv">
+77,78,
+83,84,
+89,90,
+95,96
+</data>
+ </layer>
+</map>

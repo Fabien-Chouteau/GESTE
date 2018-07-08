@@ -20,6 +20,8 @@ package SDL_Display is
    procedure Push_Pixels (Pixels    : GESTE.Output_Buffer);
    procedure Set_Drawing_Area (Area : GESTE.Rect);
 
+   procedure Set_Screen_Offset (Pt : GESTE.Point);
+
    procedure Update;
 
    subtype SDL_Pixel is Unsigned_16;
