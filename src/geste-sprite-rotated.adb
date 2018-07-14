@@ -74,8 +74,8 @@ package body GESTE.Sprite.Rotated is
       SX : constant Integer := X - Tile_Size / 2;
       SY : constant Integer := Y - Tile_Size / 2;
    begin
-      X := Integer (Cos(-This.Angle) * SX + sin(-This.Angle) * SY);
-      Y := Integer (-sin(-This.Angle) * SX + cos(-This.Angle) * SY);
+      X := Integer (Cos (-This.Angle) * SX + Sin (-This.Angle) * SY);
+      Y := Integer (-Sin (-This.Angle) * SX + Cos (-This.Angle) * SY);
 
       X := X + Tile_Size / 2;
       Y := Y + Tile_Size / 2;

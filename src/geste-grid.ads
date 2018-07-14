@@ -36,7 +36,7 @@ with GESTE.Tile_Bank;
 
 package GESTE.Grid is
 
-   type Grid_Data is array (Natural range <>, Natural range <>)of Tile_Index;
+   type Grid_Data is array (Natural range <>, Natural range <>) of Tile_Index;
    type Grid_Data_Ref is access constant Grid_Data;
 
    subtype Parent is Layer.Instance;

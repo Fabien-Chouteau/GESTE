@@ -32,7 +32,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with GESTE_Fonts;
 with GESTE_Config; use GESTE_Config;
 
 package GESTE is

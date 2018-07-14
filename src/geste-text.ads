@@ -32,6 +32,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with GESTE_Fonts;
+
 package GESTE.Text is
 
    subtype Parent is Layer.Instance;
