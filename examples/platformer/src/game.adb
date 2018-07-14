@@ -1,13 +1,7 @@
 with Ada.Real_Time;
 
-with SDL_Display;
+with Render;
 with Keyboard;
-
-with Game_Assets;
-with Game_Assets.Tileset;
-with Game_Assets.Tileset_Collisions;
-with Game_Assets.Level_1;
-with Game_Assets.Level_2;
 
 with Levels;
 with Player;
@@ -23,22 +17,10 @@ package body Game is
    use type RT.Time;
    use type RT.Time_Span;
 
-   package Display is new SDL_Display
-     (Width       => 320,
-      Height      => 240,
-      Pixel_Scale => 4,
-      Buffer_Size => 320 * 240);
-
-   Background : constant Display.SDL_Pixel
-     := Display.To_SDL_Color (176, 226, 255);
-
-   Black      : constant Display.SDL_Pixel
-     := Display.To_SDL_Color (0, 0, 0);
-
    Text : aliased GESTE.Text.Instance
      (GESTE_Fonts.FreeMono5pt7b.Font,
       15, 1,
-      Black,
+      Render.Black,
       GESTE_Config.Transparent);
 
    Frame_Counter   : Natural := 0;
@@ -121,15 +103,10 @@ package body Game is
             Frame_Counter := 0;
          end if;
 
-         GESTE.Render_Dirty
-           (Display.Screen_Rect,
-            Background,
-            Display.Buffer,
-            Display.Push_Pixels'Access,
-            Display.Set_Drawing_Area'Access);
+         Render.Render_Dirty (Render.Dark_Cyan);
 
          delay until Next_Release;
-         Next_Release := Next_Release + Period;
+         Next_Release := RT.Clock + Period;
       end loop;
    end Game_Loop;
 
@@ -139,11 +116,6 @@ begin
 
    Text.Move ((0, 0));
    GESTE.Add (Text'Access, 10);
-   GESTE.Render_All
-     (Display.Screen_Rect,
-      Background,
-      Display.Buffer,
-      Display.Push_Pixels'Access,
-      Display.Set_Drawing_Area'Access);
+   Render.Render_All (Render.Dark_Cyan);
 
 end Game;

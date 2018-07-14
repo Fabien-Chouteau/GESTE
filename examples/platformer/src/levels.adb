@@ -6,6 +6,7 @@ with Game_Assets.Level_1;
 with Game_Assets.Level_2;
 with Game_Assets.Level_3;
 
+with Render;
 with GESTE;
 with GESTE.Tile_Bank;
 with GESTE.Grid;
@@ -98,8 +99,9 @@ package body Levels is
 
             Lvl3_Front.Move ((0, 0));
             GESTE.Add (Lvl3_Front'Access, 2);
-
       end case;
+
+      Render.Render_All (Render.Dark_Cyan);
    end Enter;
 
    -----------

@@ -1,5 +1,4 @@
 with GESTE;
-with Game_Assets;
 
 package Player is
 

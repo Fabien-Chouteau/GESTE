@@ -26,6 +26,7 @@ package body Levels is
    -----------
 
    procedure Enter (Id : Level_Id) is
+      pragma Unreferenced (Id);
    begin
       Track2_Mid.Enable_Collisions;
       Track2_Mid.Move ((0, 0));

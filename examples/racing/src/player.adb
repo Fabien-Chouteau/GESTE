@@ -3,16 +3,15 @@ with GESTE.Tile_Bank;
 with GESTE.Sprite.Rotated;
 with GESTE_Config;      use GESTE_Config;
 with GESTE.Maths;       use GESTE.Maths;
-with GESTE.Maths_Types; use GESTE.Maths_Types;
 with GESTE.Physics;
 with GESTE.Text;
 
 with GESTE_Fonts.FreeMono6pt7b;
 
-with Game_Assets;
 with Game_Assets.track_1;
 with Game_Assets.Tileset;
 
+with Interfaces; use Interfaces;
 
 package body Player is
 
@@ -27,12 +26,19 @@ package body Player is
       GESTE.No_Collisions,
       Game_Assets.Palette'Access);
 
-   Stats : aliased GESTE.Text.Instance
+   subtype Stat_Text is GESTE.Text.Instance
      (Da_Font           => GESTE_Fonts.FreeMono6pt7b.Font,
       Number_Of_Columns => 15,
-      Number_Of_Lines   => 4,
+      Number_Of_Lines   => 1,
       Foreground        => 1,
       Background        => GESTE_Config.Transparent);
+
+   Next_Gate_Text : aliased Stat_Text;
+   Lap_Text : aliased Stat_Text;
+   Best_Text : aliased Stat_Text;
+   Current_Text : aliased Stat_Text;
+
+   Frame_Count : Unsigned_32 := 0;
 
    Start : Game_Assets.Object renames
      Game_Assets.track_1.Start.Objects (Game_Assets.track_1.Start.Objects'First);
@@ -43,40 +49,12 @@ package body Player is
    Best_Lap    : Time_Value := 0.0 * s;
    Current_Lap : Time_Value := 0.0 * s;
 
-   Max_Jump_Frame : constant := 7;
-
    Do_Throttle : Boolean := False;
    Do_Brake : Boolean := False;
    Going_Left : Boolean := False;
    Going_Right : Boolean := False;
 
-   type Collision_Points is (BL, BR, Left, Right, TL, TR);
-
-   Collides : array (Collision_Points) of Boolean;
-   Offset   : constant array (Collision_Points) of GESTE.Point
-     := (BL    => (-4, 7),
-         BR    => (4, 7),
-         Left  => (-6, 5),
-         Right => (6, 5),
-         TL    => (-4, -7),
-         TR    => (4, -7));
-
-   procedure Update_Collisions;
    function Inside_Gate (Obj : Game_Assets.Object) return Boolean;
-
-   -----------------------
-   -- Update_Collisions --
-   -----------------------
-
-   procedure Update_Collisions is
-      X : constant Integer := Integer (P.Position.X);
-      Y : constant Integer := Integer (P.Position.Y);
-   begin
-      for Pt in Collision_Points loop
-         Collides (Pt) := GESTE.Collides ((X + Offset (Pt).X,
-                                           Y + Offset (Pt).Y));
-      end loop;
-   end Update_Collisions;
 
    -----------------
    -- Inside_Gate --
@@ -117,12 +95,23 @@ package body Player is
       VX       : constant Dimensionless := P.Speed.X;
       VY       : constant Dimensionless := P.Speed.Y;
 
+      function Drag return Force_Vect;
+      function Friction return Force_Vect;
+
+      ----------
+      -- Drag --
+      ----------
+
       function Drag return Force_Vect is
          Speed    : constant Dimensionless := Magnitude (P.Speed);
       begin
          return (Force_Value (-Dimensionless (C_Drag * Dimensionless (VX * Speed))),
                  Force_Value (-Dimensionless (C_Drag * Dimensionless (VY * Speed))));
       end Drag;
+
+      --------------
+      -- Friction --
+      --------------
 
       function Friction return Force_Vect is
          C_TT : Dimensionless := 30.0 * C_Drag;
@@ -136,6 +125,7 @@ package body Player is
       end Friction;
 
    begin
+      Frame_Count := Frame_Count + 1;
 
       if Going_Right then
          P.Set_Angle (P.Angle - 0.060);
@@ -162,19 +152,17 @@ package body Player is
 
       P.Step (Elapsed);
 
-      Update_Collisions;
-
       P.Set_Angle (P.Angle);
       P.Sprite.Move ((Integer (P.Position.X) - 8,
                      Integer (P.Position.Y) - 8));
       P.Sprite.Angle (P.Angle);
 
-      Stats.Clear;
-      Stats.Cursor (1, 1);
-      Stats.Put ("Next Gate:" & Next_Gate'Img & ASCII.LF);
-      Stats.Put ("Lap:" & Laps_Cnt'Img & ASCII.LF);
-      Stats.Put ("Best:" & Best_Lap'Img & ASCII.LF);
-      Stats.Put ("     " & Current_Lap'Img & ASCII.LF);
+      if Frame_Count mod 10 = 0 then
+         --  Update the current time every 10 frames
+         Current_Text.Clear;
+         Current_Text.Cursor (1, 1);
+         Current_Text.Put (Current_Lap'Img);
+      end if;
 
       Current_Lap := Current_Lap + Elapsed;
 
@@ -182,13 +170,24 @@ package body Player is
          if Next_Gate = Game_Assets.track_1.gates.Objects'Last then
             Next_Gate := Game_Assets.track_1.gates.Objects'First;
             Laps_Cnt := Laps_Cnt + 1;
+            Lap_Text.Clear;
+            Lap_Text.Cursor (1, 1);
+            Lap_Text.Put ("Lap:" & Laps_Cnt'Img);
+
             if Best_Lap = 0.0 * s or else Current_Lap < Best_Lap then
                Best_Lap := Current_Lap;
+               Best_Text.Clear;
+               Best_Text.Cursor (1, 1);
+               Best_Text.Put ("Best:" & Best_Lap'Img);
             end if;
             Current_Lap := 0.0 * s;
          else
             Next_Gate := Next_Gate + 1;
          end if;
+
+         Next_Gate_Text.Clear;
+         Next_Gate_Text.Cursor (1, 1);
+         Next_Gate_Text.Put ("Next Gate:" & Next_Gate'Img);
       end if;
       Do_Throttle := False;
       Do_Brake := False;
@@ -238,6 +237,15 @@ begin
    P.Set_Mass (Mass_Value (90.0));
    GESTE.Add (P.Sprite'Access, 3);
 
-   Stats.Move ((220, 0));
-   GESTE.Add (Stats'Access, 4);
+   Next_Gate_Text.Move ((220, 0));
+   Next_Gate_Text.Put ("Next Gate: 0");
+   GESTE.Add (Next_Gate_Text'Access, 4);
+   Lap_Text.Move ((220, 10));
+   Lap_Text.Put ("Lap: 0");
+   GESTE.Add (Lap_Text'Access, 5);
+   Best_Text.Move ((220, 20));
+   Best_Text.Put ("Best: 0.0");
+   GESTE.Add (Best_Text'Access, 6);
+   Current_Text.Move ((260, 30));
+   GESTE.Add (Current_Text'Access, 7);
 end Player;

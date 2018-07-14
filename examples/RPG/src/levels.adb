@@ -1,5 +1,6 @@
 
-with Game;
+with Render;
+
 with Game_Assets;
 with Game_Assets.Tileset;
 with Game_Assets.Tileset_Collisions;
@@ -11,8 +12,6 @@ with GESTE; use GESTE;
 with GESTE.Tile_Bank;
 with GESTE.Grid;
 with GESTE.Text;
-with GESTE_Config;
-with GESTE_Fonts.FreeMono8pt7b;
 
 with Player;
 
@@ -55,17 +54,17 @@ package body Levels is
       Tile_Bank'Access);
 
    Cave_Mid  : aliased GESTE.Grid.Instance
-     (Game_Assets.cave.over.Data'Access,
+     (Game_Assets.cave.Over.Data'Access,
       Tile_Bank'Access);
    Cave_Back : aliased GESTE.Grid.Instance
-     (Game_Assets.cave.ground.Data'Access,
+     (Game_Assets.cave.Ground.Data'Access,
       Tile_Bank'Access);
    Cave_Collisions : aliased GESTE.Grid.Instance
      (Game_Assets.cave.collisions.Data'Access,
       Tile_Bank'Access);
 
 
-   Lvl : Levels.Level_Id := Levels.Outside;
+   Lvl : Levels.Level_Id := Levels.Inside;
    Screen_Pos : GESTE.Point := (0, 0);
 
    procedure Move_To (Obj : Game_Assets.Object);
@@ -76,7 +75,7 @@ package body Levels is
 
    procedure Move_To (Obj : Game_Assets.Object) is
    begin
-      Player.Move ((Integer (Obj.X),Integer (Obj.Y)));
+      Player.Move ((Integer (Obj.X), Integer (Obj.Y)));
    end Move_To;
 
 
@@ -110,7 +109,7 @@ package body Levels is
                if Is_In (Obj) then
                   if  Screen_Pos /= (Integer (Obj.X), Integer (Obj.Y)) then
                      Screen_Pos := (Integer (Obj.X), Integer (Obj.Y));
-                     Game.Set_Screen_Pos (Screen_Pos);
+                     Render.Set_Screen_Offset (Screen_Pos);
                      Leave (Outside);
                      Enter (Outside);
                   end if;
@@ -136,7 +135,7 @@ package body Levels is
          when Cave =>
             if Is_In (Game_Assets.cave.gates.To_House) then
                Move_To (Game_Assets.inside.gates.From_Cave);
-               Leave (cave);
+               Leave (Cave);
                Enter (Inside);
             end if;
       end case;
@@ -165,7 +164,7 @@ package body Levels is
             Outside_Front.Move ((0, 0));
             GESTE.Add (Outside_Front'Access, 5);
 
-         when inside =>
+         when Inside =>
             Inside_Collisions.Move ((0, 0));
             Inside_Collisions.Enable_Collisions;
             GESTE.Add (Inside_Collisions'Access,
@@ -194,6 +193,8 @@ package body Levels is
             Cave_Mid.Move ((0, 0));
             GESTE.Add (Cave_Mid'Access, 2);
       end case;
+
+      Render.Render_All (0);
 
       Lvl := Id;
 

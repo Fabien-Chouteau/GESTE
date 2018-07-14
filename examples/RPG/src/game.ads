@@ -1,4 +1,3 @@
-with Game_Assets;
 with GESTE;
 
 package Game is

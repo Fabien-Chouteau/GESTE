@@ -1,6 +1,5 @@
 with GESTE;
 with GESTE.Maths_Types; use GESTE.Maths_Types;
-with Game_Assets;
 
 package Player is
 

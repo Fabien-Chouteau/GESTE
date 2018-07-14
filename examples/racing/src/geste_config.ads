@@ -10,6 +10,6 @@ package GESTE_Config is
 
    Tile_Size : constant :=  16;
 
-   type Tile_Index is range 0 .. 105;
+   type Tile_Index is range 0 .. 151;
    No_Tile : constant Tile_Index := 0;
 end GESTE_Config;

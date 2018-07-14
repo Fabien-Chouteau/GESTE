@@ -5,7 +5,6 @@ with GESTE_Config;      use GESTE_Config;
 with GESTE.Maths_Types; use GESTE.Maths_Types;
 with GESTE.Physics;
 
-with Game_Assets;
 with Game_Assets.Tileset;
 with Game_Assets.character;
 with Interfaces; use Interfaces;
@@ -13,8 +12,8 @@ with Interfaces; use Interfaces;
 package body Player is
 
    Player_Sprite : aliased GESTE.Grid.Grid_Data :=
-     (( 0, 0, 0, 0),
-      ( 0, 0, 0, 0));
+     ((0, 0, 0, 0),
+      (0, 0, 0, 0));
 
    type Player_Type (Bank       : not null GESTE.Tile_Bank.Const_Ref;
                      Init_Frame : GESTE_Config.Tile_Index)
@@ -70,6 +69,8 @@ package body Player is
    procedure Move (Pt : GESTE.Point) is
    begin
       P.Set_Position ((Length_Value (Pt.X), Length_Value (Pt.Y)));
+      P.Sprite.Move ((Integer (P.Position.X) - 16,
+                     Integer (P.Position.Y) - 50));
    end Move;
 
    --------------

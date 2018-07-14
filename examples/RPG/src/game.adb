@@ -1,16 +1,11 @@
 with Ada.Real_Time;
 
-with SDL_Display;
+with Render;
 with Keyboard;
-
-with Game_Assets;
-with Game_Assets.Tileset;
-with Game_Assets.Tileset_Collisions;
 
 with Levels;
 with Player;
 
-with GESTE;
 with GESTE.Text;
 with GESTE_Config;
 with GESTE_Fonts.FreeMono5pt7b;
@@ -21,25 +16,10 @@ package body Game is
    use type RT.Time;
    use type RT.Time_Span;
 
-   Width : constant := 320;
-   Height : constant := 240;
-
-   package Display is new SDL_Display
-     (Width       => Width,
-      Height      => Height,
-      Pixel_Scale => 4,
-      Buffer_Size => 320 * 240);
-
-   Background : constant Display.SDL_Pixel
-     := Display.To_SDL_Color (176, 226, 255);
-
-   Black      : constant Display.SDL_Pixel
-     := Display.To_SDL_Color (0, 0, 0);
-
    Text : aliased GESTE.Text.Instance
      (GESTE_Fonts.FreeMono5pt7b.Font,
       15, 1,
-      Black,
+      Render.Black,
       GESTE_Config.Transparent);
 
    Frame_Counter   : Natural := 0;
@@ -47,8 +27,6 @@ package body Game is
 
    Period : constant RT.Time_Span := RT.Seconds (1) / 60;
    Next_Release : RT.Time := RT.Clock + Period;
-
-   Screen_Pt : GESTE.Point := (0, 0);
 
    ---------------
    -- Game_Loop --
@@ -89,14 +67,7 @@ package body Game is
             Frame_Counter := 0;
          end if;
 
-         GESTE.Render_Dirty
-           ((Screen_Pt,
-            (Screen_Pt.X + Width - 1,
-             Screen_Pt.Y + Height - 1)),
-            Background,
-            Display.Buffer,
-            Display.Push_Pixels'Access,
-            Display.Set_Drawing_Area'Access);
+         Render.Render_Dirty (Render.Black);
 
          delay until Next_Release;
          Next_Release := Next_Release + Period;
@@ -109,18 +80,12 @@ package body Game is
 
    procedure Set_Screen_Pos (Pt : GESTE.Point) is
    begin
-      Screen_Pt := Pt;
-      Display.Set_Screen_Offset (Pt);
+      Render.Set_Screen_Offset (Pt);
    end Set_Screen_Pos;
 
 begin
    Text.Move ((0, 0));
    GESTE.Add (Text'Access, 10);
-   GESTE.Render_All
-     (Display.Screen_Rect,
-      Background,
-      Display.Buffer,
-      Display.Push_Pixels'Access,
-      Display.Set_Drawing_Area'Access);
+   Render.Render_All (Render.Black);
 
 end Game;
