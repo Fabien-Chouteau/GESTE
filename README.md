@@ -8,7 +8,9 @@ GESTE is a sprite and tile 2D render engine designed to run on
 micro-controllers low performance systems. GESTE also provides a basic math and
 physic engine using fixed point arithmetic.
 
-<img src="doc/resources/rpg2.png" width="300">
+<a href="https://youtu.be/793ocsfss9g">
+<img src="doc/resources/rpg_numworks_YT.JPG" width="300">
+</a>
 
 ## Creating maps
 
