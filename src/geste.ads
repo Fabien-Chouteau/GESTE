@@ -36,16 +36,13 @@ with GESTE_Config; use GESTE_Config;
 
 package GESTE is
 
-   subtype Coordinate is Integer;
-   subtype Lenght is Natural;
-
-   type Point is record
+   type Pix_Point is record
       X, Y : Integer;
    end record;
 
-   type Rect is record
-      TL : Point; -- Top Left
-      BR : Point; -- Bottom right
+   type Pix_Rect is record
+      TL : Pix_Point; -- Top Left
+      BR : Pix_Point; -- Bottom right
    end record;
 
    -- Palette --
@@ -80,12 +77,12 @@ package GESTE is
 
    type Layer_Type is abstract tagged limited private;
 
-   function Position (This : Layer_Type) return Point;
+   function Position (This : Layer_Type) return Pix_Point;
    function Width (This : Layer_Type) return Natural;
    function Height (This : Layer_Type) return Natural;
 
    procedure Move (This : in out Layer_Type;
-                   Pt   : Point);
+                   Pt   : Pix_Point);
 
    procedure Enable_Collisions (This   : in out Layer_Type;
                                 Enable : Boolean := True);
@@ -113,21 +110,21 @@ package GESTE is
    type Push_Pixels_Proc is
      access procedure (Buffer : Output_Buffer);
 
-   type Set_Drawing_Area_Proc is access procedure (Area : Rect);
+   type Set_Drawing_Area_Proc is access procedure (Area : Pix_Rect);
 
-   procedure Render_Window (Window           : Rect;
+   procedure Render_Window (Window           : Pix_Rect;
                             Background       : Output_Color;
                             Buffer           : in out Output_Buffer;
                             Push_Pixels      : Push_Pixels_Proc;
                             Set_Drawing_Area : Set_Drawing_Area_Proc);
 
-   procedure Render_All (Screen_Rect      : Rect;
+   procedure Render_All (Screen_Rect      : Pix_Rect;
                          Background       : Output_Color;
                          Buffer           : in out Output_Buffer;
                          Push_Pixels      : Push_Pixels_Proc;
                          Set_Drawing_Area : Set_Drawing_Area_Proc);
 
-   procedure Render_Dirty (Screen_Rect      : Rect;
+   procedure Render_Dirty (Screen_Rect      : Pix_Rect;
                            Background       : Output_Color;
                            Buffer           : in out Output_Buffer;
                            Push_Pixels      : Push_Pixels_Proc;
@@ -135,9 +132,12 @@ package GESTE is
 
    -- Collisions --
 
-   function Collides (Pt : Point) return Boolean;
+   function Collides (Pt : Pix_Point) return Boolean;
 
 private
+
+   subtype Coordinate is Integer;
+   subtype Lenght is Natural;
 
    -- Layer --
 
@@ -146,11 +146,11 @@ private
       Prev               : Layer.Ref      := null;
       Prio               : Layer_Priority := 0;
 
-      Pt                 : Point := (0, 0);
+      Pt                 : Pix_Point := (0, 0);
       A_Width            : Natural := 0;
       A_Height           : Natural := 0;
       Dirty              : Boolean := True;
-      Last_Pt            : Point := (0, 0);
+      Last_Pt            : Pix_Point := (0, 0);
       Collisions_Enabled : Boolean := False;
    end record;
 

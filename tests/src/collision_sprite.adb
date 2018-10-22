@@ -7,7 +7,7 @@ with Console_Char_Screen;
 
 procedure Collision_Sprite is
 
-   use type GESTE.Point;
+   use type GESTE.Pix_Point;
 
    package Console_Screen is new Console_Char_Screen
      (Width       => 10,

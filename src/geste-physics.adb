@@ -270,7 +270,7 @@ package body GESTE.Physics is
    -- Mass --
    ----------
 
-   function Mass (This : Object) return Mass_Value
+   function Mass (This : Object) return Value
    is (This.M);
 
    --------------
@@ -278,7 +278,7 @@ package body GESTE.Physics is
    --------------
 
    procedure Set_Mass (This : in out Object;
-                       M    : Mass_Value)
+                       M    : Value)
    is
    begin
       This.M := M;
@@ -288,7 +288,7 @@ package body GESTE.Physics is
    -- Position --
    --------------
 
-   function Position (This : Object) return Position_Type
+   function Position (This : Object) return GESTE.Maths_Types.Point
    is (This.P);
 
    ------------------
@@ -297,7 +297,7 @@ package body GESTE.Physics is
 
    procedure Set_Position
      (This : in out Object;
-      P    : Position_Type)
+      P    : GESTE.Maths_Types.Point)
    is
    begin
       This.P := P;
@@ -307,7 +307,7 @@ package body GESTE.Physics is
    -- Speed --
    -----------
 
-   function Speed (This : Object) return Speed_Vect
+   function Speed (This : Object) return Vect
    is (This.S);
 
    ---------------
@@ -316,7 +316,7 @@ package body GESTE.Physics is
 
    procedure Set_Speed
      (This : in out Object;
-      S    : Speed_Vect)
+      S    : Vect)
    is
    begin
       This.S := S;
@@ -327,7 +327,7 @@ package body GESTE.Physics is
    -- Acceleration --
    ------------------
 
-   function Acceleration (This : Object) return Acceleration_Vect
+   function Acceleration (This : Object) return Vect
    is (This.A);
 
    ----------------------
@@ -336,7 +336,7 @@ package body GESTE.Physics is
 
    procedure Set_Acceleration
      (This : in out Object;
-      A    : Acceleration_Vect)
+      A    : Vect)
    is
    begin
       This.A := A;
@@ -346,7 +346,7 @@ package body GESTE.Physics is
    -- Force --
    -----------
 
-   function Force (This : Object) return Force_Vect
+   function Force (This : Object) return Vect
    is (This.F);
 
    -----------------
@@ -355,7 +355,7 @@ package body GESTE.Physics is
 
    procedure Apply_Force
      (This : in out Object;
-      F    : Force_Vect)
+      F    : Vect)
    is
    begin
       This.F.X := This.F.X + F.X;
@@ -367,17 +367,17 @@ package body GESTE.Physics is
    -------------------
 
    procedure Apply_Gravity (This : in out Object;
-                            G    : Force_Value := 9.51 * N)
+                            G    : Value := 9.51)
    is
    begin
-      This.Apply_Force ((0.0 * N, -G * Dimensionless (This.Mass)));
+      This.Apply_Force ((0.0, -G * This.Mass));
    end Apply_Gravity;
 
    -----------
    -- Angle --
    -----------
 
-   function Angle (This : Object) return Angle_Value
+   function Angle (This : Object) return Value
    is (This.Angle);
 
    ---------------
@@ -385,7 +385,7 @@ package body GESTE.Physics is
    ---------------
 
    procedure Set_Angle (This  : in out Object;
-                        Angle : Angle_Value)
+                        Angle : Value)
    is
    begin
       This.Angle := Angle;
@@ -406,7 +406,7 @@ package body GESTE.Physics is
 
    procedure Step
      (This    : in out Object;
-      Elapsed : Time_Value)
+      Elapsed : Value)
    is
    begin
       This.A.X := This.F.X / This.M;

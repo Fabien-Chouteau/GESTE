@@ -65,7 +65,7 @@ package body Levels is
 
 
    Lvl : Levels.Level_Id := Levels.Inside;
-   Screen_Pos : GESTE.Point := (0, 0);
+   Screen_Pos : GESTE.Pix_Point := (0, 0);
 
    procedure Move_To (Obj : Game_Assets.Object);
 
@@ -84,7 +84,7 @@ package body Levels is
    ------------
 
    procedure Update is
-      Pos : constant GESTE.Point := Player.Position;
+      Pos : constant GESTE.Pix_Point := Player.Position;
 
       function Is_In (Obj : Game_Assets.Object) return Boolean;
 

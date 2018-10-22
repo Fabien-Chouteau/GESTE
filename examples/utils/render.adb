@@ -11,7 +11,7 @@ package body Render is
       Pixel_Scale => 4,
       Buffer_Size => 320 * 240);
 
-   Screen_Pt : GESTE.Point := (0, 0);
+   Screen_Pt : GESTE.Pix_Point := (0, 0);
 
    -----------------
    -- Push_Pixels --
@@ -24,14 +24,14 @@ package body Render is
    -- Set_Drawing_Area --
    ----------------------
 
-   procedure Set_Drawing_Area (Area : GESTE.Rect)
+   procedure Set_Drawing_Area (Area : GESTE.Pix_Rect)
    renames Display.Set_Drawing_Area;
 
    -----------------------
    -- Set_Screen_Offset --
    -----------------------
 
-   procedure Set_Screen_Offset (Pt : GESTE.Point) is
+   procedure Set_Screen_Offset (Pt : GESTE.Pix_Point) is
    begin
       Display.Set_Screen_Offset (Pt);
       Screen_Pt := Pt;

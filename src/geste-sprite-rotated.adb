@@ -46,7 +46,7 @@ package body GESTE.Sprite.Rotated is
    -- Angle --
    -----------
 
-   function Angle (This : Instance) return Angle_Value
+   function Angle (This : Instance) return Value
    is (This.Angle);
 
    -----------
@@ -54,7 +54,7 @@ package body GESTE.Sprite.Rotated is
    -----------
 
    procedure Angle (This  : in out Instance;
-                    Angle : Angle_Value)
+                    Angle : Value)
    is
    begin
       if This.Angle /= Angle then

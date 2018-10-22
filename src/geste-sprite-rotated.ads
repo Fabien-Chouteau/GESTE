@@ -39,14 +39,14 @@ package GESTE.Sprite.Rotated is
    subtype Parent is Sprite.Instance;
    type Instance is new Parent with private;
 
-   function Angle (This : Instance) return Angle_Value;
+   function Angle (This : Instance) return Value;
 
    procedure Angle (This  : in out Instance;
-                    Angle : Angle_Value);
+                    Angle : Value);
 private
 
    type Instance is new Parent with record
-      Angle : Angle_Value := Angle_Value (0.0);
+      Angle : Value := Value (0.0);
    end record;
 
    overriding
