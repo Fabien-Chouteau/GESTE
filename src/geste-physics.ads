@@ -36,6 +36,72 @@ with GESTE.Maths_Types; use GESTE.Maths_Types;
 
 package GESTE.Physics is
 
+   type Object is tagged limited private;
+
+   procedure Step (This    : in out Object;
+                   Elapsed : Value);
+   --  Compute the new state (acceleration, speed, position) of the object given
+   --  the time elapsed since last call to Step.
+
+   function Mass (This : Object) return Value;
+   --  Current mass of the object
+
+   procedure Set_Mass (This : in out Object;
+                       M    : Value);
+   --  Set the mass of the object
+
+   function Position (This : Object) return GESTE.Maths_Types.Point;
+   --  Current position of the object
+
+   procedure Set_Position (This : in out Object;
+                           P    : GESTE.Maths_Types.Point);
+   --  Set the position of the object. This is recomended only for initilization
+   --  (or teleportation :). During normal operation the position should be
+   --  computed from the speed in the Step procedure.
+
+   function Angle (This : Object) return Value;
+   --  Current angle of the object
+
+   procedure Set_Angle (This  : in out Object;
+                        Angle : Value);
+   --  Set the angle of the object
+
+   function Direction (This : Object) return Vect;
+   --  Return a normalized vector of where the object is pointing. This vector
+   --  is computed from the Angle of the object.
+
+   function Speed (This : Object) return Vect;
+   --  Current speed vecto of the object
+
+   procedure Set_Speed (This : in out Object;
+                        S    : Vect);
+   --  Set the speed of the object. This is recomended only for initilization.
+   --  During normal operation the speed should be computed from the
+   --  acceleration in the Step procedure.
+
+   function Acceleration (This : Object) return Vect;
+   --  Current acceleration vector of the object
+
+   procedure Set_Acceleration (This : in out Object;
+                               A    : Vect);
+   --  Set the acceleration of the object. This is recomended only for
+   --  initilization. During normal operation the acceleration should
+   --  be computed from the forces in the Step procedure.
+
+   function Force (This : Object) return Vect;
+   --  Sum of the current forces applied to the object. This is cleared during a
+   --  during call to Step.
+
+   procedure Apply_Force (This : in out Object;
+                          F    : Vect);
+   --  Apply a force vector to the object
+
+   procedure Apply_Gravity (This : in out Object;
+                            G    : Value := 9.51);
+   --  Gravity helper procedure. Applies a G * Mass downwards force vector
+
+private
+
    type Hit_Box_Kind is (None, Rectangle, Rect_Borders, Circle, Line);
 
    type Hit_Box_Type (Kind : Hit_Box_Kind := Rectangle) is record
@@ -43,66 +109,31 @@ package GESTE.Physics is
          when None =>
             null;
          when Rectangle | Rect_Borders =>
-            Width  : Length_Value;
-            Height : Length_Value;
+            Width  : Value;
+            Height : Value;
          when Circle =>
-            Radius : Length_Value;
+            Radius : Value;
          when Line =>
-            End_X_Offset : Length_Value;
-            End_Y_Offset : Length_Value;
+            End_X_Offset : Value;
+            End_Y_Offset : Value;
       end case;
    end record;
-
-   type Object is tagged limited private;
 
    procedure Set_Hit_Box (This : in out Object; Box : Hit_Box_Type);
    function Hit_Box (This : Object) return Hit_Box_Type;
 
    function Collide (This : Object; Obj : Object'Class) return Boolean;
-
-   function Mass (This : Object) return Mass_Value;
-   procedure Set_Mass (This : in out Object;
-                       M    : Mass_Value);
-
-   function Position (This : Object) return Position_Type;
-   procedure Set_Position (This : in out Object;
-                           P    : Position_Type);
-
-   function Speed (This : Object) return Speed_Vect;
-   procedure Set_Speed (This : in out Object;
-                        S    : Speed_Vect);
-
-   function Acceleration (This : Object) return Acceleration_Vect;
-   procedure Set_Acceleration (This : in out Object;
-                               A    : Acceleration_Vect);
-
-   function Force (This : Object) return Force_Vect;
-   procedure Apply_Force (This : in out Object;
-                          F    : Force_Vect);
-
-   procedure Apply_Gravity (This : in out Object;
-                            G    : Force_Value := 9.51 * N);
-
-   function Angle (This : Object) return Angle_Value;
-   procedure Set_Angle (This  : in out Object;
-                        Angle : Angle_Value);
-
-   function Direction (This : Object) return Vect;
-
-   procedure Step (This    : in out Object;
-                   Elapsed : Time_Value);
-
-private
+   --  Return True of two objects colide with each other
 
    type Object is tagged limited record
       Box   : Hit_Box_Type := (Kind => None);
-      P     : Position_Type := Origin;
-      M     : Mass_Value := Mass_Value (0.0);
-      S     : Speed_Vect := No_Speed;
-      A     : Acceleration_Vect := No_Acceleration;
-      F     : Force_Vect := No_Force;
+      P     : GESTE.Maths_Types.Point := Origin;
+      M     : Value := 0.0;
+      S     : Vect := No_Speed;
+      A     : Vect := No_Acceleration;
+      F     : Vect := No_Force;
 
-      Angle : Angle_Value := Angle_Value (0.0);
+      Angle : Value := 0.0;
    end record;
 
 end GESTE.Physics;

@@ -43,8 +43,8 @@ package body GESTE.Maths is
    ---------
 
    function Sin
-     (A : Angle_Value)
-      return Dimensionless
+     (A : Value)
+      return Value
    is
    begin
       return Sine_Table (Unsigned_32 (Integer (A * Sine_Alpha) mod (2**30)) and (Sine_Table_Size - 1));
@@ -55,8 +55,8 @@ package body GESTE.Maths is
    ---------
 
    function Cos
-     (A : Angle_Value)
-      return Dimensionless
+     (A : Value)
+      return Value
    is
    begin
       return Cos_Table (Unsigned_32 (Integer (A * Cos_Alpha) mod (2**30)) and (Cos_Table_Size - 1));
@@ -66,15 +66,15 @@ package body GESTE.Maths is
    -- To_Degrees --
    ----------------
 
-   function To_Degrees (A : Angle_Value) return Dimensionless
-   is (A * 360.0 / (Pi * 2.0));
+   function To_Degrees (A : Value) return Value
+   is (Value (Value (A * 360.0) / Value (Pi * 2.0)));
 
    ---------
    -- To_ --
    ---------
 
-   function To_Rad (A : Dimensionless) return Angle_Value
-   is (Angle_Value (Angle_Value (A) * Angle_Value (Pi * 2.0)) / Angle_Value (360.0));
+   function To_Rad (A : Value) return Value
+   is (Value (Value (A) * Value (Pi * 2.0)) / Value (360.0));
 
    ---------
    -- "-" --
@@ -87,36 +87,22 @@ package body GESTE.Maths is
    -- "*" --
    ---------
 
-   function "*" (V : Vect; F : Force_Value) return Force_Vect
+   function "*" (V : Vect; F : Value) return Vect
    is (V.X * F, V.Y * F);
 
    ---------
    -- "*" --
    ---------
 
-   function "*" (F : Force_Value; V : Vect) return Force_Vect
-   is (V.X * F, V.Y * F);
-
-   ---------
-   -- "*" --
-   ---------
-
-   function "*" (V : Force_Vect; F : Dimensionless) return Force_Vect
-   is (V.X * F, V.Y * F);
-
-   ---------
-   -- "*" --
-   ---------
-
-   function "*" (F : Dimensionless; V : Force_Vect) return Force_Vect
+   function "*" (F : Value; V : Vect) return Vect
    is (V.X * F, V.Y * F);
 
    ----------
    -- Sqrt --
    ----------
 
-   function Sqrt (V : Dimensionless) return Dimensionless is
-      A : Dimensionless;
+   function Sqrt (V : Value) return Value is
+      A : Value;
    begin
       if V <= 0.0 then
          return -1.0;
@@ -139,21 +125,7 @@ package body GESTE.Maths is
    -- Magnitude --
    ---------------
 
-   function Magnitude (V : Force_Vect) return Force_Value
-   is (Sqrt (V.X * V.X + V.Y * V.Y));
-
-   ---------------
-   -- Magnitude --
-   ---------------
-
-   function Magnitude (V : Acceleration_Vect) return Acceleration_Value
-   is (Sqrt (V.X * V.X + V.Y * V.Y));
-
-   ---------------
-   -- Magnitude --
-   ---------------
-
-   function Magnitude (V : Speed_Vect) return Speed_Value
+   function Magnitude (V : Vect) return Value
    is (Sqrt (V.X * V.X + V.Y * V.Y));
 
 end GESTE.Maths;

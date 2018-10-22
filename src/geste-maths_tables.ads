@@ -39,9 +39,9 @@ with GESTE.Maths_Types; use GESTE.Maths_Types;
 package GESTE.Maths_Tables is
 
    Sine_Table_Size : constant := 256;
-   Sine_Alpha      : constant := Dimensionless (Sine_Table_Size) / (2 * 3.14159);
+   Sine_Alpha      : constant := Value (Sine_Table_Size) / (2 * 3.14159);
    pragma Style_Checks (Off);
-   Sine_Table : constant array (Unsigned_32 range 0 .. Sine_Table_Size - 1) of Dimensionless :=
+   Sine_Table : constant array (Unsigned_32 range 0 .. Sine_Table_Size - 1) of Value :=
     ( 0.000, 0.025, 0.049, 0.074, 0.098, 0.122,
       0.147, 0.171, 0.195, 0.219, 0.243, 0.267,
       0.290, 0.314, 0.337, 0.360, 0.383, 0.405,
@@ -89,9 +89,9 @@ package GESTE.Maths_Tables is
 
 
    Cos_Table_Size : constant := 256;
-   Cos_Alpha      : constant := Dimensionless (Cos_Table_Size) / (2 * 3.14159);
+   Cos_Alpha      : constant := Value (Cos_Table_Size) / (2 * 3.14159);
    pragma Style_Checks (Off);
-   Cos_Table : constant array (Unsigned_32 range 0 .. Cos_Table_Size - 1) of Dimensionless :=
+   Cos_Table : constant array (Unsigned_32 range 0 .. Cos_Table_Size - 1) of Value :=
     ( 1.000, 1.000, 0.999, 0.997, 0.995, 0.992,
       0.989, 0.985, 0.981, 0.976, 0.970, 0.964,
       0.957, 0.950, 0.942, 0.933, 0.924, 0.914,

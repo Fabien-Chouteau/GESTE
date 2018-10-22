@@ -40,7 +40,7 @@ package body Player is
    type Collision_Points is (BL, BR, TL, TR);
 
    Collides : array (Collision_Points) of Boolean;
-   Offset   : constant array (Collision_Points) of GESTE.Point
+   Offset   : constant array (Collision_Points) of GESTE.Pix_Point
      := (BL    => (-13, 7),
          BR    => (13, 7),
          TL    => (-13, -5),
@@ -66,9 +66,9 @@ package body Player is
    -- Move --
    ----------
 
-   procedure Move (Pt : GESTE.Point) is
+   procedure Move (Pt : GESTE.Pix_Point) is
    begin
-      P.Set_Position ((Length_Value (Pt.X), Length_Value (Pt.Y)));
+      P.Set_Position ((Value (Pt.X), Value (Pt.Y)));
       P.Sprite.Move ((Integer (P.Position.X) - 16,
                      Integer (P.Position.Y) - 50));
    end Move;
@@ -77,7 +77,7 @@ package body Player is
    -- Position --
    --------------
 
-   function Position return GESTE.Point
+   function Position return GESTE.Pix_Point
    is ((Integer (P.Position.X), Integer (P.Position.Y)));
 
    ------------
@@ -85,13 +85,13 @@ package body Player is
    ------------
 
    procedure Update is
-      Old : Position_Type := P.Position;
+      Old : Point := P.Position;
    begin
 
       if Going_Up then
-         P.Set_Position ((P.Position.X, P.Position.Y - Move_Unit * m));
+         P.Set_Position ((P.Position.X, P.Position.Y - Move_Unit));
       elsif Going_Down then
-         P.Set_Position ((P.Position.X, P.Position.Y + Move_Unit * m));
+         P.Set_Position ((P.Position.X, P.Position.Y + Move_Unit));
       end if;
 
       Update_Collisions;
@@ -110,9 +110,9 @@ package body Player is
       Old := P.Position;
 
       if Going_Right then
-         P.Set_Position ((P.Position.X + Move_Unit * m, P.Position.Y));
+         P.Set_Position ((P.Position.X + Move_Unit, P.Position.Y));
       elsif Going_Left then
-         P.Set_Position ((P.Position.X - Move_Unit * m, P.Position.Y));
+         P.Set_Position ((P.Position.X - Move_Unit, P.Position.Y));
       end if;
 
       Update_Collisions;

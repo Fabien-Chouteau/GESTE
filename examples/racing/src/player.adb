@@ -46,8 +46,8 @@ package body Player is
 
    Next_Gate   : Natural := Game_Assets.track_1.gates.Objects'First;
    Laps_Cnt    : Natural := 0;
-   Best_Lap    : Time_Value := 0.0 * s;
-   Current_Lap : Time_Value := 0.0 * s;
+   Best_Lap    : Value := 0.0;
+   Current_Lap : Value := 0.0;
 
    Do_Throttle : Boolean := False;
    Do_Brake : Boolean := False;
@@ -69,59 +69,58 @@ package body Player is
    -- Move --
    ----------
 
-   procedure Move (Pt : GESTE.Point) is
+   procedure Move (Pt : GESTE.Pix_Point) is
    begin
-      P.Set_Position ((Length_Value (Pt.X), Length_Value (Pt.Y)));
+      P.Set_Position ((Value (Pt.X), Value (Pt.Y)));
    end Move;
 
    --------------
    -- Position --
    --------------
 
-   function Position return GESTE.Point
+   function Position return GESTE.Pix_Point
    is ((Integer (P.Position.X), Integer (P.Position.Y)));
 
    ------------
    -- Update --
    ------------
 
-   procedure Update (Elapsed : Time_Value) is
-      Old        : constant Position_Type := P.Position;
-      Brake_Coef : Force_Value;
+   procedure Update (Elapsed : Value) is
+      Old        : constant Point := P.Position;
+      Brake_Coef : Value;
       Dir        : constant Vect := P.Direction;
-      Traction   : constant Force_Vect := Dir * Force_Value (10_000.0);
+      Traction   : constant Vect := Dir * 10_000.0;
 
-      C_Drag   : constant Dimensionless := 0.5 * 0.3 * 2.2 * 1.29;
-      VX       : constant Dimensionless := P.Speed.X;
-      VY       : constant Dimensionless := P.Speed.Y;
+      C_Drag   : constant Value := 0.5 * 0.3 * 2.2 * 1.29;
+      VX       : constant Value := P.Speed.X;
+      VY       : constant Value := P.Speed.Y;
 
-      function Drag return Force_Vect;
-      function Friction return Force_Vect;
+      function Drag return Vect;
+      function Friction return Vect;
 
       ----------
       -- Drag --
       ----------
 
-      function Drag return Force_Vect is
-         Speed    : constant Dimensionless := Magnitude (P.Speed);
+      function Drag return Vect is
+         Speed : constant Value := Magnitude (P.Speed);
       begin
-         return (Force_Value (-Dimensionless (C_Drag * Dimensionless (VX * Speed))),
-                 Force_Value (-Dimensionless (C_Drag * Dimensionless (VY * Speed))));
+         return (-(Value (C_Drag * VX) * Speed),
+                 -(Value (C_Drag * VY) * Speed));
       end Drag;
 
       --------------
       -- Friction --
       --------------
 
-      function Friction return Force_Vect is
-         C_TT : Dimensionless := 30.0 * C_Drag;
+      function Friction return Vect is
+         C_TT : Value := 30.0 * C_Drag;
       begin
          if not GESTE.Collides ((Integer (Old.X), Integer (Old.Y))) then
             --  Off track
             C_TT := C_TT * 100;
          end if;
-         return (Force_Value (-Dimensionless (C_TT * VX)),
-                 Force_Value (-Dimensionless (C_TT * VY)));
+         return (-C_TT * VX, -C_TT * VY);
       end Friction;
 
    begin
@@ -139,13 +138,12 @@ package body Player is
       end if;
 
       if Do_Brake then
-         Brake_Coef := -120.0 * N;
+         Brake_Coef := -120.0;
       else
-         Brake_Coef := -90.0 * N;
+         Brake_Coef := -90.0;
       end if;
 
-      P.Apply_Force ((Dimensionless (P.Speed.X) * Brake_Coef,
-                     (Dimensionless (P.Speed.Y) * Brake_Coef)));
+      P.Apply_Force ((P.Speed.X * Brake_Coef, P.Speed.Y * Brake_Coef));
 
       P.Apply_Force (Drag);
       P.Apply_Force (Friction);
@@ -174,13 +172,13 @@ package body Player is
             Lap_Text.Cursor (1, 1);
             Lap_Text.Put ("Lap:" & Laps_Cnt'Img);
 
-            if Best_Lap = 0.0 * s or else Current_Lap < Best_Lap then
+            if Best_Lap = 0.0 or else Current_Lap < Best_Lap then
                Best_Lap := Current_Lap;
                Best_Text.Clear;
                Best_Text.Cursor (1, 1);
                Best_Text.Put ("Best:" & Best_Lap'Img);
             end if;
-            Current_Lap := 0.0 * s;
+            Current_Lap := 0.0;
          else
             Next_Gate := Next_Gate + 1;
          end if;
@@ -232,9 +230,9 @@ package body Player is
    end Move_Right;
 
 begin
-   P.Set_Position ((Length_Value (Start.X), Length_Value (Start.Y)));
+   P.Set_Position ((Value (Start.X), Value (Start.Y)));
    P.Set_Angle (Pi);
-   P.Set_Mass (Mass_Value (90.0));
+   P.Set_Mass (90.0);
    GESTE.Add (P.Sprite'Access, 3);
 
    Next_Gate_Text.Move ((220, 0));

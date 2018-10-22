@@ -78,7 +78,7 @@ package body Game is
    -- Set_Screen_Pos --
    --------------------
 
-   procedure Set_Screen_Pos (Pt : GESTE.Point) is
+   procedure Set_Screen_Pos (Pt : GESTE.Pix_Point) is
    begin
       Render.Set_Screen_Offset (Pt);
    end Set_Screen_Pos;

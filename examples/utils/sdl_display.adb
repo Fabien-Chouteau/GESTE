@@ -6,7 +6,7 @@ package body SDL_Display is
 
    Display : access SDL_Surface;
 
-   Screen_Offset : GESTE.Point := (0, 0);
+   Screen_Offset : GESTE.Pix_Point := (0, 0);
 
    XS, XE, YS, YE : Natural := 0;
    X, Y : Natural := 0;
@@ -37,7 +37,7 @@ package body SDL_Display is
    -- Set_Drawing_Area --
    ----------------------
 
-   procedure Set_Drawing_Area (Area : GESTE.Rect) is
+   procedure Set_Drawing_Area (Area : GESTE.Pix_Rect) is
    begin
       XS := Area.TL.X - Screen_Offset.X;
       YS := Area.TL.Y - Screen_Offset.Y;
@@ -63,7 +63,7 @@ package body SDL_Display is
    -- Set_Screen_Offset --
    -----------------------
 
-   procedure Set_Screen_Offset (Pt : GESTE.Point) is
+   procedure Set_Screen_Offset (Pt : GESTE.Pix_Point) is
    begin
       Screen_Offset := Pt;
    end Set_Screen_Offset;

@@ -33,18 +33,18 @@ package body Console_Char_Screen is
    -- Set_Drawing_Area --
    ----------------------
 
-   procedure Set_Drawing_Area (Area : GESTE.Rect) is
+   procedure Set_Drawing_Area (Area : GESTE.Pix_Rect) is
    begin
       XS := Area.TL.X;
       YS := Area.TL.Y;
       XE := Area.BR.X;
       YE := Area.BR.Y;
 
-      XS := GESTE.Coordinate'Max (0, XS);
-      YS := GESTE.Coordinate'Max (0, YS);
+      XS := Integer'Max (0, XS);
+      YS := Integer'Max (0, YS);
 
-      XE := GESTE.Coordinate'Min (Width - 1, XE);
-      YE := GESTE.Coordinate'Min (Height - 1, YE);
+      XE := Integer'Min (Width - 1, XE);
+      YE := Integer'Min (Height - 1, YE);
 
       X := XS;
       Y := YS;

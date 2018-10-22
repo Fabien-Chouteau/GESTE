@@ -43,7 +43,7 @@ package body Game is
             return;
          end if;
 
-         Player.Update (Time_Value (1.0 / 60.0));
+         Player.Update (Value (1.0 / 60.0));
 
          Render.Render_Dirty (Render.Black);
 

@@ -2,9 +2,9 @@ with GESTE;
 
 package Player is
 
-   procedure Move (Pt : GESTE.Point);
+   procedure Move (Pt : GESTE.Pix_Point);
 
-   function Position return GESTE.Point;
+   function Position return GESTE.Pix_Point;
 
    procedure Update;
 

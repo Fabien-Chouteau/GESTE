@@ -50,7 +50,7 @@ package body GESTE is
    --------------
 
    function Position (This : Layer_Type)
-                     return Point
+                     return Pix_Point
    is (This.Pt);
 
    ----------
@@ -58,7 +58,7 @@ package body GESTE is
    ----------
 
    procedure Move (This : in out Layer_Type;
-                   Pt   : Point)
+                   Pt   : Pix_Point)
    is
    begin
       if This.Pt /= Pt then
@@ -166,7 +166,7 @@ package body GESTE is
    -- Render_Window --
    -------------------
 
-   procedure Render_Window (Window           : Rect;
+   procedure Render_Window (Window           : Pix_Rect;
                             Background       : Output_Color;
                             Buffer           : in out  Output_Buffer;
                             Push_Pixels      : Push_Pixels_Proc;
@@ -242,7 +242,7 @@ package body GESTE is
    -- Render_All --
    ----------------
 
-   procedure Render_All (Screen_Rect      : Rect;
+   procedure Render_All (Screen_Rect      : Pix_Rect;
                          Background       : Output_Color;
                          Buffer           : in out Output_Buffer;
                          Push_Pixels      : Push_Pixels_Proc;
@@ -291,7 +291,7 @@ package body GESTE is
    -- Render_Dirty --
    ------------------
 
-   procedure Render_Dirty (Screen_Rect      : Rect;
+   procedure Render_Dirty (Screen_Rect      : Pix_Rect;
                            Background       : Output_Color;
                            Buffer           : in out Output_Buffer;
                            Push_Pixels      : Push_Pixels_Proc;
@@ -344,7 +344,7 @@ package body GESTE is
    -- Collides --
    --------------
 
-   function Collides (Pt : Point) return Boolean is
+   function Collides (Pt : Pix_Point) return Boolean is
       L : Layer.Ref := Layer_List;
       X : Integer;
       Y : Integer;

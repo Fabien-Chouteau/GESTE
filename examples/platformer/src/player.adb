@@ -35,7 +35,7 @@ package body Player is
    type Collision_Points is (BL, BR, Left, Right, TL, TR);
 
    Collides : array (Collision_Points) of Boolean;
-   Offset   : constant array (Collision_Points) of GESTE.Point
+   Offset   : constant array (Collision_Points) of GESTE.Pix_Point
      := (BL    => (-4, 7),
          BR    => (4, 7),
          Left  => (-6, 5),
@@ -65,16 +65,16 @@ package body Player is
    -- Move --
    ----------
 
-   procedure Move (Pt : GESTE.Point) is
+   procedure Move (Pt : GESTE.Pix_Point) is
    begin
-      P.Set_Position ((Length_Value (Pt.X), Length_Value (Pt.Y)));
+      P.Set_Position (GESTE.Maths_Types.Point'(Value (Pt.X), Value (Pt.Y)));
    end Move;
 
    --------------
    -- Position --
    --------------
 
-   function Position return GESTE.Point
+   function Position return GESTE.Pix_Point
    is ((Integer (P.Position.X), Integer (P.Position.Y)));
 
    ------------
@@ -82,7 +82,7 @@ package body Player is
    ------------
 
    procedure Update is
-      Old : constant Position_Type := P.Position;
+      Old : constant Point := P.Position;
    begin
 
       if Going_Right then
@@ -95,30 +95,31 @@ package body Player is
 
       if Grounded then
          if Going_Right then
-            P.Apply_Force ((14_000.0 * N, 0.0 * N));
+            P.Apply_Force ((14_000.0, 0.0));
          elsif Going_Left then
-            P.Apply_Force ((-14_000.0 * N, 0.0 * N));
+            P.Apply_Force ((-14_000.0, 0.0));
          else
             --  Friction
-            P.Apply_Force ((Dimensionless (P.Speed.X) * Force_Value (-800.0),
-                           0.0 * N));
+            P.Apply_Force (
+                           (Value (Value (-800.0) * P.Speed.X),
+                           0.0));
          end if;
       else
          if Going_Right then
-            P.Apply_Force ((7_000.0 * N, 0.0 * N));
+            P.Apply_Force ((7_000.0, 0.0));
          elsif Going_Left then
-            P.Apply_Force ((-7_000.0 * N, 0.0 * N));
+            P.Apply_Force ((-7_000.0, 0.0));
          end if;
 
-         P.Apply_Gravity (Force_Value (-500.0));
+         P.Apply_Gravity (Value (-500.0));
       end if;
 
       if Do_Jump then
-         P.Apply_Force ((0.0 * N, -20_0000.0 * N));
+         P.Apply_Force ((0.0, -20_0000.0));
          Jumping := True;
       end if;
 
-      P.Step (Time_Value (1.0 / 60.0));
+      P.Step (Value (1.0 / 60.0));
 
       Update_Collisions;
 
@@ -131,7 +132,7 @@ package body Player is
          Collides (TR)
       then
          P.Set_Position ((P.Position.X, Old.Y));
-         P.Set_Speed ((P.Speed.X, Speed_Value (0.0)));
+         P.Set_Speed ((P.Speed.X, Value (0.0)));
          Jump_Cnt := 0;
       end if;
 
@@ -142,14 +143,14 @@ package body Player is
       Grounded := Collides (BL) or else Collides (BR);
       Jumping := Jumping and not Grounded;
 
-      if (P.Speed.X > Speed_Value (0.0)
+      if (P.Speed.X > Value (0.0)
           and then (Collides (Right) or else Collides (TR)))
         or else
-          (P.Speed.X < Speed_Value (0.0)
+          (P.Speed.X < Value (0.0)
            and then (Collides (Left) or else Collides (TL)))
       then
          P.Set_Position ((Old.X, P.Position.Y));
-         P.Set_Speed ((Speed_Value (0.0), P.Speed.Y));
+         P.Set_Speed ((Value (0.0), P.Speed.Y));
       end if;
 
       P.Sprite.Move ((Integer (P.Position.X) - 8,
@@ -191,6 +192,6 @@ package body Player is
    end Move_Right;
 
 begin
-   P.Set_Mass (Mass_Value (90.0));
+   P.Set_Mass (Value (90.0));
    GESTE.Add (P.Sprite'Access, 3);
 end Player;

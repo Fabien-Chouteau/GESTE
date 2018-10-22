@@ -13,14 +13,14 @@ generic
 
 package SDL_Display is
 
-   Screen_Rect : constant GESTE.Rect := ((0, 0), (Width - 1, Height - 1));
+   Screen_Rect : constant GESTE.Pix_Rect := ((0, 0), (Width - 1, Height - 1));
 
    Buffer : GESTE.Output_Buffer (1 .. Buffer_Size);
 
    procedure Push_Pixels (Pixels    : GESTE.Output_Buffer);
-   procedure Set_Drawing_Area (Area : GESTE.Rect);
+   procedure Set_Drawing_Area (Area : GESTE.Pix_Rect);
 
-   procedure Set_Screen_Offset (Pt : GESTE.Point);
+   procedure Set_Screen_Offset (Pt : GESTE.Pix_Point);
 
    procedure Update;
 

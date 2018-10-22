@@ -8,7 +8,7 @@ with Ada.Exceptions;
 
 procedure Layer_Priority is
 
-   use type GESTE.Point;
+   use type GESTE.Pix_Point;
 
    package Console_Screen is new Console_Char_Screen
      (Width       => 9,

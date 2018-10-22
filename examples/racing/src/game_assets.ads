@@ -2187,10 +2187,10 @@ package Game_Assets is
    is record
       Name    : String_Access;
       Id      : Natural;
-      X       : GESTE.Maths_Types.Dimensionless;
-      Y       : GESTE.Maths_Types.Dimensionless;
-      Width   : GESTE.Maths_Types.Dimensionless;
-      Height  : GESTE.Maths_Types.Dimensionless;
+      X       : GESTE.Maths_Types.Value;
+      Y       : GESTE.Maths_Types.Value;
+      Width   : GESTE.Maths_Types.Value;
+      Height  : GESTE.Maths_Types.Value;
       Str     : String_Access;
       Tile_Id : GESTE_Config.Tile_Index;
    end record;
