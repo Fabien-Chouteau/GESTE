@@ -49,6 +49,9 @@ package GESTE.Maths is
    function "-" (V : Vect) return Vect;
    function "*" (V : Vect; F : Value) return Vect;
    function "*" (F : Value; V : Vect) return Vect;
+   function "+" (V : Vect; F : Value) return Vect;
+   function "+" (F : Value; V : Vect) return Vect;
+   function "+" (V1, V2 : Vect) return Vect;
 
    function Sqrt (V : Value) return Value;
 

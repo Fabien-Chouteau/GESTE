@@ -74,7 +74,7 @@ package body GESTE.Maths is
    ---------
 
    function To_Rad (A : Value) return Value
-   is (Value (Value (A) * Value (Pi * 2.0)) / Value (360.0));
+   is (Value (A * Value (Pi * 2.0)) / Value (360.0));
 
    ---------
    -- "-" --
@@ -96,6 +96,27 @@ package body GESTE.Maths is
 
    function "*" (F : Value; V : Vect) return Vect
    is (V.X * F, V.Y * F);
+
+   ---------
+   -- "+" --
+   ---------
+
+   function "+" (V : Vect; F : Value) return Vect
+   is (V.X + F, V.Y + F);
+
+   ---------
+   -- "+" --
+   ---------
+
+   function "+" (F : Value; V : Vect) return Vect
+   is (V.X + F, V.Y + F);
+
+   ---------
+   -- "+" --
+   ---------
+
+   function "+" (V1, V2 : Vect) return Vect
+   is ((V1.X + V2.X, V1.Y + V2.Y));
 
    ----------
    -- Sqrt --
