@@ -3,41 +3,18 @@ language: python
 python:
   - "2.7"
 
-# Global variables
-env:
-  global:
-    - TOOLS_DIR=$HOME/build_tools
-    - GNAT_TAR_PATH=$TOOLS_DIR/gnat-gpl-2017-x86_64-linux-bin.tar.gz
-
 os:
   - linux
 
-addons:
-    apt:
-        packages:
-            - lcov
-
-# Cache directory that allows us to not download GNAT GPL every time, speeding
-# up the process.
-cache:
-  directories:
-  - $HOME/build_tools
-
 install:
-  # Check if the GNAT package is already available in the cache directory. If
-  # not, download it.
-  - test -f  $GNAT_TAR_PATH ||( mkdir -p $TOOLS_DIR && wget http://mirrors.cdn.adacore.com/art/591c6d80c7a447af2deed1d7 -O $GNAT_TAR_PATH)
 
-  # Extract GNAT from its package
-  - tar -xf $GNAT_TAR_PATH
+  # Install GNAT FSF
+  - sudo apt-get -y install gnat gprbuild
 
-  # Add GNAT to $PATH
-  - export PATH=$PATH:$PWD/gnat-gpl-2017-x86_64-linux-bin/bin/
+  # Install lcov for coverage
+  - sudo apt-get -y install lcov
 
 script:
-  # Show GNAT version for the record
-  - $PWD/gnat-gpl-2017-x86_64-linux-bin/bin/gprbuild --version
-
   # Start the testsuite
   - python $PWD/tests/run.py --coverage
 
