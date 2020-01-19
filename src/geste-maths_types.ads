@@ -2,7 +2,7 @@
 --                                                                          --
 --                                   GESTE                                  --
 --                                                                          --
---                    Copyright (C) 2018 Fabien Chouteau                    --
+--                 Copyright (C) 2018-2019 Fabien Chouteau                  --
 --                                                                          --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
@@ -50,15 +50,13 @@ package GESTE.Maths_Types is
 
    Pi  : constant Value  := 3.1415926535897932384626433;
 
-   type Point is record
-      X, Y : Value;
-   end record;
-
-   Origin : constant Point := (0.0, 0.0);
-
    type Vect is record
       X, Y : Value;
    end record;
+
+   subtype Point is Vect;
+
+   Origin : constant Point := (0.0, 0.0);
 
    type Rectangle is record
       Org    : Point;
