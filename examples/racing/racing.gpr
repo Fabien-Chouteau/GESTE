@@ -5,8 +5,6 @@ project Racing extends "../../geste" is
    for Exec_Dir use ".";
    for Main use ("main.adb");
    
-   for Create_Missing_Dirs use "True";
-
    package Linker is
       for Default_Switches ("Ada") use ("-lSDL");
   end Linker;

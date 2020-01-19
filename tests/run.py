@@ -110,7 +110,7 @@ def main(args):
                                       os.path.join(tests_dir, "tests.gpr"))
     print_result("Test cleanup", ret)
 
-    build_args = ["gprbuild", '-f', "-j0", "-P",
+    build_args = ["gprbuild", '-p', '-f', "-j0", "-P",
                   os.path.join(tests_dir, "tests.gpr")]
 
     if args.coverage:
