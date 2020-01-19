@@ -133,6 +133,7 @@ package body GESTE is
          end if;
       end if;
       L.Dirty := True;
+      L.Last_Pt := L.Pt;
       L.Update_Size;
    end Add;
 
@@ -350,6 +351,7 @@ package body GESTE is
                               Set_Drawing_Area);
             end if;
 
+            L.Last_Pt := L.Pt;
             L.Dirty := False;
          end if;
          L := L.Next;
