@@ -36,12 +36,6 @@ with GESTE.Maths; use GESTE.Maths;
 
 package body GESTE.Sprite.Rotated is
 
-   function Transform (This : Instance;
-                       X, Y : in out Integer)
-                       return Boolean;
-   --  Rotate the original coordinates to the rotated coordinates.
-   --  Return False if the result coordinates are outside the tile.
-
    -----------
    -- Angle --
    -----------

@@ -56,4 +56,10 @@ private
    overriding
    function Collides (This : Instance; X, Y : Integer) return Boolean;
 
+   function Transform (This : Instance;
+                       X, Y : in out Integer)
+                       return Boolean;
+   --  Rotate the original coordinates to the rotated coordinates.
+   --  Return False if the result coordinates are outside the tile.
+
 end GESTE.Sprite.Rotated;
