@@ -162,6 +162,22 @@ package body GESTE is
 
    end Remove;
 
+   ----------------
+   -- Remove_All --
+   ----------------
+
+   procedure Remove_All is
+      L : Layer.Ref;
+   begin
+      while Layer_List /= null loop
+         L := Layer_List;
+         Layer_List := L.next;
+
+         L.Next := null;
+         L.Prev := null;
+      end loop;
+   end Remove_All;
+
    -------------------
    -- Render_Window --
    -------------------

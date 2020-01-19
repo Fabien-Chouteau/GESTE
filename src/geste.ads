@@ -103,6 +103,8 @@ package GESTE is
 
    procedure Remove (L : not null Layer.Ref);
 
+   procedure Remove_All;
+
    subtype Output_Buffer_Index is Natural;
 
    type Output_Buffer is array (Output_Buffer_Index range <>) of Output_Color;
