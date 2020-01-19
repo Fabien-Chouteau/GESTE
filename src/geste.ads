@@ -156,10 +156,14 @@ private
       Collisions_Enabled : Boolean := False;
    end record;
 
-   function Pix (This : Layer_Type; X, Y : Integer) return Output_Color
+   function Pix (This               : Layer_Type;
+                 Unused_X, Unused_Y : Integer)
+                 return Output_Color
    is (Transparent);
 
-   function Collides (This : Layer_Type; X, Y : Integer) return Boolean
+   function Collides (This               : Layer_Type;
+                      Unused_X, Unused_Y : Integer)
+                      return Boolean
    is (False);
 
    procedure Update_Size (This : in out Layer_Type)
