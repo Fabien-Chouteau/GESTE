@@ -102,11 +102,11 @@ package body GESTE.Sprite is
       PY : Integer := Y;
    begin
 
-      if This.V_Flip then
+      if This.H_Flip then
          PX := Tile_Size - PX - 1;
       end if;
 
-      if This.H_Flip then
+      if This.V_Flip then
          PY := Tile_Size - PY - 1;
       end if;
 
